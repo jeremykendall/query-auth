@@ -15,7 +15,7 @@ to handle both of those tasks.
 ## Usage
 
 There are three components to this library: Client signature creation, server
-signature validation, and API key generation.  
+signature validation, and API key generation.
 
 ### Signature Creation
 
@@ -24,13 +24,13 @@ $key = 'API_KEY';
 $secret = 'API_SECRET';
 $timestamp = time();
 
-$client = new QueryAuth\Client(); 
+$client = new QueryAuth\Client();
 $signature = $client->generateSignature($key, $secret, $timestamp);
 ```
 
-If you plan to pass the signature along via the querystring, make sure to
-`urlencode` it first. A convenience function for generating a url encoded
-signature is provided.
+If you plan to pass the signature along via the querystring, make sure to [url
+encode](http://php.net/urlencode) it first. A convenience function for
+generating a url encoded signature is provided.
 
 ```php
 $urlEncodedSignature = $client->generateUrlEncodedSignature($key, $secret, $timestamp);
@@ -54,17 +54,17 @@ $isValid = $server->validateSignature($key, $secret, $timestamp, $signature);
 
 ### Key Generation
 
-**NOTE**: *This is extremely naive key and secret generation. Use at your own risk.*
-
 You can generate API keys and secrets in the following manner.
 
 ```php
-$keyGenerator = new QueryAuth\KeyGenerator();
+$randomFactory = new \RandomLib\Factory();
+$keyGenerator = new QueryAuth\KeyGenerator($randomFactory);
 
-// 32 character alphanumeric string
+// 40 character random alphanumeric string
 $key = $keyGenerator->generateKey();
 
-// 44 character alphanumeric string
+// 60 character random string containing the characters
+// 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ./
 $secret = $keyGenerator->generateSecret();
 ```
 
