@@ -1,5 +1,7 @@
 # Query Auth
 
+master: [![Build Status](https://travis-ci.org/jeremykendall/query-auth.png?branch=master)](https://travis-ci.org/jeremykendall/query-auth) develop: [![Build Status](https://travis-ci.org/jeremykendall/query-auth.png?branch=develop)](https://travis-ci.org/jeremykendall/query-auth)
+
 Signature generation and validation for REST API query authentication
 
 ## API Query Authentication
