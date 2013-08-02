@@ -88,6 +88,7 @@ Package installation is handled by Composer.
 
 ## Feedback and Contributions
 
-Constructive criticisms and pull-requests are both very welcome.  This is my
-first foray into a library like this and I'm sure there are areas that need
-improvement.  Feel free to send along any input you've got.
+* Feedback is welcome in the form of pull requests and/or issues.
+* Contributions should generally follow the strategy outlined in ["Contributing
+  to a project"](https://help.github.com/articles/fork-a-repo#contributing-to-a-project)
+* Please submit pull requests against the `develop` branch
