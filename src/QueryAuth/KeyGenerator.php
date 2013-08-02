@@ -2,28 +2,47 @@
 
 namespace QueryAuth;
 
+use RandomLib\Factory as RandomFactory;
+
 class KeyGenerator
 {
     /**
-     * Returns 32 character alphanumeric randomish string
+     * @var RandomFactory
+     */
+    private $randomFactory;
+
+    /**
+     * Public constructor
+     *
+     * @var RandomFactory $randomFactory RandomLib factory
+     */
+    public function __construct(RandomFactory $randomFactory)
+    {
+        $this->randomFactory = $randomFactory;
+    }
+
+    /**
+     * Returns 40 character alphanumeric random string
      *
      * @return string API key
      */
     public function generateKey()
     {
-        $serial = sha1(uniqid(rand(), true));
-        $checksum = substr(md5($serial), 0, 4);
+        $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $generator = $this->randomFactory->getMediumStrengthGenerator();
 
-        return sha1(uniqid(rand(), true)) . substr(md5($serial), 0, 4);
+        return $generator->generateString(40, $chars);
     }
 
     /**
-     * Returns 44 character alphanumeric randomish string
+     * Returns 60 character alphanumeric plus '.' and '/' random string
      *
      * @return string API secret
      */
     public function generateSecret()
     {
-        return hash_hmac('sha256', sha1(time()), microtime());
+        $generator = $this->randomFactory->getMediumStrengthGenerator();
+
+        return $generator->generateString(60);
     }
 }
