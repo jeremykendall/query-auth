@@ -14,22 +14,10 @@ to handle both of those tasks.
 
 ## Usage
 
-There are three components to this library: Server signature validation, client
-signature creation, and API key generation.
+There are three components to this library: Client signature creation, server
+signature validation, and API key generation.  
 
-### Query Auth Overview
-
-Given an API key, API secret, and a Unix timestamp, you can generate a signature
-by Base64 encoding a SHA-256 hash of API key concatenated with the Unix timestamp
-and the API secret.
-
-Validating the signature is as easy as recreating the signature on the server
-side and comparing it to the signature provided in the API request.  As long as
-each API request contains the API key, a Unix timestamp, and the signature,
-it's trivial to recreate the signature for the purposes of authenticating the
-request.
-
-### Client Signature Creation
+### Signature Creation
 
 ```php
 $key = 'API_KEY';
@@ -48,7 +36,7 @@ signature is provided.
 $urlEncodedSignature = $client->generateUrlEncodedSignature($key, $secret, $timestamp);
 ```
 
-### Server Signature Validation
+### Signature Validation
 
 Grab the API key, timestamp, and signature from the API request, then retrieve
 the API secret from whatever persistence layer you're using.  Now validate the
@@ -97,3 +85,9 @@ Package installation is handled by Composer.
 
 * Run `composer install`
 * Require Composer's `vendor/autoload` script in your bootstrap/init script
+
+## Feedback and Contributions
+
+Constructive criticisms and pull-requests are both very welcome.  This is my
+first foray into a library like this and I'm sure there are areas that need
+improvement.  Feel free to send along any input you've got.
