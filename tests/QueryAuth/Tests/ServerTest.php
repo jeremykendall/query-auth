@@ -41,6 +41,12 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $this->timestamp = time();
     }
 
+    protected function tearDown()
+    {
+        $this->server = null;
+        $this->client = null;
+    }
+
     public function testValidateSignature()
     {
         $testSignature = $this->client
@@ -49,6 +55,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $result = $this->server->validateSignature(
             $this->key, $this->secret, $this->timestamp, $testSignature
         );
+
         $this->assertTrue($result);
     }
 
@@ -58,6 +65,40 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $result = $this->server->validateSignature(
             $this->key, $this->secret, $this->timestamp, $testSignature
         );
+
         $this->assertFalse($result);
+    }
+
+    public function testExceedsMaximumDriftThrowsException()
+    {
+        $this->setExpectedException(
+            'QueryAuth\Exception\MaximumDriftExceededException',
+            sprintf('Timestamp is more than %d seconds in the future.', $this->server->getDrift())
+        );
+
+        $this->server->validateSignature(
+            $this->key, $this->secret, $this->timestamp + ($this->server->getDrift() + 10), 'WAT'
+        );
+    }
+
+    public function testExceedsMinimumDriftThrowsException()
+    {
+        $this->setExpectedException(
+            'QueryAuth\Exception\MinimumDriftExceededException',
+            sprintf('Timestamp is more than %d seconds in the past.', $this->server->getDrift())
+        );
+
+        $this->server->validateSignature(
+            $this->key, $this->secret, $this->timestamp - ($this->server->getDrift() + 10), 'WAT'
+        );
+    }
+
+    public function testGetSetDrift()
+    {
+        // Test default value
+        $this->assertEquals(300, $this->server->getDrift());
+
+        $this->server->setDrift(30);
+        $this->assertEquals(30, $this->server->getDrift());
     }
 }
