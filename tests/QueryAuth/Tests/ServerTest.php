@@ -3,7 +3,9 @@
 namespace QueryAuth\Tests;
 
 use QueryAuth\Client;
+use QueryAuth\NormalizedParameterCollection;
 use QueryAuth\Server;
+use QueryAuth\Signer;
 
 class ServerTest extends \PHPUnit_Framework_TestCase
 {
@@ -28,17 +30,30 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     private $secret;
 
     /**
-     * @var int
+     * @var string
      */
-    private $timestamp;
+    private $host;
+
+    /**
+     * @var string
+     */
+    private $path;
+
+    /**
+     * @var Signer
+     */
+    private $signer;
 
     protected function setUp()
     {
-        $this->server = new Server();
-        $this->client = new Client();
+        $collection = new NormalizedParameterCollection();
+        $this->signer = new Signer($collection);
+        $this->server = new Server($this->signer);
+        $this->client = new Client($this->signer);
         $this->key = md5(time());
         $this->secret = base64_encode(time() . 'secret');
-        $this->timestamp = time();
+        $this->host = 'www.example.com';
+        $this->path = '/resources';
     }
 
     protected function tearDown()
@@ -47,13 +62,27 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $this->client = null;
     }
 
-    public function testValidateSignature()
+    public function testValidateSignatureGetRequest()
     {
-        $testSignature = $this->client
-            ->generateSignature($this->key, $this->secret, $this->timestamp);
+        $signedParams = $this->client->getSignedRequestParams(
+            $this->key, $this->secret, 'GET', $this->host, $this->path, $params = array()
+        );
 
         $result = $this->server->validateSignature(
-            $this->key, $this->secret, $this->timestamp, $testSignature
+            $this->secret, 'GET', $this->host, $this->path, $signedParams
+        );
+
+        $this->assertTrue($result);
+    }
+
+    public function testValidateSignaturePostRequest()
+    {
+        $signedParams = $this->client->getSignedRequestParams(
+            $this->key, $this->secret, 'POST', $this->host, $this->path, $params = array('foo' => 'bar', 'baz' => 'bat')
+        );
+
+        $result = $this->server->validateSignature(
+            $this->secret, 'POST', $this->host, $this->path, $signedParams
         );
 
         $this->assertTrue($result);
@@ -61,9 +90,14 @@ class ServerTest extends \PHPUnit_Framework_TestCase
 
     public function testValidateSignatureReturnsFalseForInvalidSignature()
     {
-        $testSignature = 'WAT';
+        $signedParams = $this->client->getSignedRequestParams(
+            $this->key, $this->secret, 'GET', $this->host, $this->path, $params = array()
+        );
+
+        $signedParams['signature'] = 'WAT';
+
         $result = $this->server->validateSignature(
-            $this->key, $this->secret, $this->timestamp, $testSignature
+            $this->secret, 'GET', $this->host, $this->path, $signedParams
         );
 
         $this->assertFalse($result);
@@ -73,11 +107,20 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException(
             'QueryAuth\Exception\MaximumDriftExceededException',
-            sprintf('Timestamp is more than %d seconds in the future.', $this->server->getDrift())
+            sprintf(
+                'Timestamp is more than %d seconds in the future.',
+                $this->server->getDrift()
+            )
         );
 
+        $signedParams = $this->client->getSignedRequestParams(
+            $this->key, $this->secret, 'GET', $this->host, $this->path, $params = array()
+        );
+
+        $signedParams['timestamp'] = $signedParams['timestamp'] + ($this->server->getDrift() + 10);
+
         $this->server->validateSignature(
-            $this->key, $this->secret, $this->timestamp + ($this->server->getDrift() + 10), 'WAT'
+            $this->secret, 'GET', $this->host, $this->path, $signedParams
         );
     }
 
@@ -85,20 +128,55 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException(
             'QueryAuth\Exception\MinimumDriftExceededException',
-            sprintf('Timestamp is more than %d seconds in the past.', $this->server->getDrift())
+            sprintf(
+                'Timestamp is more than %d seconds in the past.',
+                $this->server->getDrift()
+            )
         );
 
+        $signedParams = $this->client->getSignedRequestParams(
+            $this->key, $this->secret, 'GET', $this->host, $this->path, $params = array()
+        );
+
+        $signedParams['timestamp'] = $signedParams['timestamp'] - ($this->server->getDrift() + 10);
+
         $this->server->validateSignature(
-            $this->key, $this->secret, $this->timestamp - ($this->server->getDrift() + 10), 'WAT'
+            $this->secret, 'GET', $this->host, $this->path, $signedParams
+        );
+    }
+
+    public function testMissingSignatureThrowsException()
+    {
+        $this->setExpectedException(
+            'QueryAuth\Exception\SignatureMissingException',
+            'Request must contain a signature.'
+        );
+
+        $signedParams = $this->client->getSignedRequestParams(
+            $this->key, $this->secret, 'GET', $this->host, $this->path, $params = array()
+        );
+
+        unset($signedParams['signature']);
+
+        $this->server->validateSignature(
+            $this->secret, 'GET', $this->host, $this->path, $signedParams
         );
     }
 
     public function testGetSetDrift()
     {
         // Test default value
-        $this->assertEquals(300, $this->server->getDrift());
+        $this->assertEquals(15, $this->server->getDrift());
 
         $this->server->setDrift(30);
         $this->assertEquals(30, $this->server->getDrift());
+    }
+
+    public function testGetSetSigner()
+    {
+        $this->assertInstanceOf('QueryAuth\Signer', $this->server->getSigner());
+        $signature = new Signer(new NormalizedParameterCollection());
+        $this->server->setSigner($signature);
+        $this->assertSame($signature, $this->server->getSigner());
     }
 }

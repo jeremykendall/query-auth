@@ -16,43 +16,60 @@ to handle both of those tasks.
 
 ## Usage
 
-There are three components to this library: Client signature creation, server
-signature validation, and API key generation.
+There are three components to this library: Request signing for API consumers,
+request signature validation for API creators, and API key and API secret
+generation.
 
-### Signature Creation
+### Request Signing
 
 ```php
+$collection = new QueryAuth\NormalizedParameterCollection();
+$signer = new QueryAuth\Signer($collection);
+$client = new QueryAuth\Client($signer);
+
 $key = 'API_KEY';
 $secret = 'API_SECRET';
-$timestamp = time();
+$method = 'GET';
+$host = 'api.example.com';
+$path = '/resources';
+$params = array('type' => 'vehicles');
 
-$client = new QueryAuth\Client();
-$signature = $client->generateSignature($key, $secret, $timestamp);
+$signedParameters = $client->getSignedRequestParams($key, $secret, $method, $host, $path, $params);
 ```
 
-If you plan to pass the signature along via the querystring, make sure to [url
-encode](http://php.net/urlencode) it first. A convenience function for
-generating a url encoded signature is provided.
+`Client::getSignedRequestParams()` returns an array of parameters to send via
+the querystring (for `GET` requests) or the request body. The parameters are
+those provided to the method (if any), plus `timestamp`, `key`, and `signature`.
 
-```php
-$urlEncodedSignature = $client->generateUrlEncodedSignature($key, $secret, $timestamp);
-```
+**NOTE**: The signature is automatically url encoded if the method is `GET`.
 
 ### Signature Validation
 
-Grab the API key, timestamp, and signature from the API request, then retrieve
-the API secret from whatever persistence layer you're using.  Now validate the
-signature.
-
 ```php
-$key = 'API_KEY_FROM_REQUEST';
-$timestamp = 'TIMESTAMP_FROM_REQUEST';
-$signature = 'SIGNATURE_FROM_REQUEST';
-$secret = 'API_SECRET_FROM_PERSISTENCE_LAYER';
+$collection = new QueryAuth\NormalizedParameterCollection();
+$signer = new QueryAuth\Signer($collection);
+$server = new QueryAuth\Server($signer);
 
-$server = new QueryAuth\Server();
-$isValid = $server->validateSignature($key, $secret, $timestamp, $signature);
+$secret = 'API_SECRET_FROM_PERSISTENCE_LAYER';
+$method = 'GET';
+$host = 'api.example.com';
+$path = '/resources';
+// querystring params or request body as an array,
+// which includes timestamp, key, and signature params from the client's
+// getSignedRequestParams method
+$params = 'PARAMS_FROM_REQUEST'; 
+
+$isValid = $server->validateSignature($secret, $method, $host, $path, $params);
 ```
+
+`Server::validateSignature()` will return either true or false.  It might also
+throw one of three exceptions:
+* `MaximumDriftExceededException`: If timestamp is too far in the future
+* `MinimumDriftExceededException`: It timestamp is too far in the past
+* `SignatureMissingException`: If signature is missing from request params
+
+Drift defaults to 15 seconds, meaning there is a 30 second window during which the
+request is valid. The default value can be modified using `Server::setDrift()`.
 
 ### Key Generation
 
@@ -69,6 +86,9 @@ $key = $keyGenerator->generateKey();
 // 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ./
 $secret = $keyGenerator->generateSecret();
 ```
+
+Both key and secret are generated using Anthony Ferrara's [RandomLib](https://github.com/ircmaxell/RandomLib)
+random string generator.
 
 ## Installation
 
@@ -94,3 +114,18 @@ Package installation is handled by Composer.
 * Contributions should generally follow the strategy outlined in ["Contributing
   to a project"](https://help.github.com/articles/fork-a-repo#contributing-to-a-project)
 * Please submit pull requests against the `develop` branch
+
+## Credits
+
+* The Client, Signer, and NormalizedParameterCollection code are my own implementation of
+the [Signature Version 2
+implementation](https://github.com/aws/aws-sdk-php/blob/master/src/Aws/Common/Signature/SignatureV2.php)
+from the [AWS SDK for PHP
+2](https://github.com/aws/aws-sdk-php/blob/master/src/Aws/Common/Signature/SignatureV2.php).
+
+As such, a version of the Apache License Version 2.0 is included with this
+distribution, and the applicable portion of the AWS SDK for PHP 2 NOTICE file
+is included.
+
+* API key and API secret generation is handled by Anthony Ferrara's
+[RandomLib](https://github.com/ircmaxell/RandomLib) random string generator.

@@ -4,45 +4,75 @@ namespace QueryAuth;
 
 use QueryAuth\Exception\MaximumDriftExceededException;
 use QueryAuth\Exception\MinimumDriftExceededException;
+use QueryAuth\Exception\SignatureMissingException;
+use QueryAuth\Signer;
 
 class Server
 {
     /**
      * @var int Permissible drift, in seconds
      */
-    private $drift = 300;
+    private $drift = 15;
+
+    /**
+     * Instance of the signature creation class
+     *
+     * @var Signer
+     */
+    private $signer;
+
+    /**
+     * Public constructor
+     *
+     * @param Signer $signer Instance of the signature creation class
+     */
+    public function __construct(Signer $signer)
+    {
+        $this->signer = $signer;
+    }
 
     /**
      * Is signature valid?
      *
-     * @param  string                        $key       API key
-     * @param  string                        $secret    API secret
-     * @param  int                           $timestamp Unix timestamp
+     * @param  string                        $secret API secret
+     * @param  string                        $method Request method (GET, POST, PUT, HEAD, etc)
+     * @param  string                        $host   Host portion of API resource URL (including subdomain, excluding scheme)
+     * @param  string                        $path   Path portion of API resource URL (excluding query and fragment)
+     * @param  array                         $params Request params
      * @throws MaximumDriftExceededException If drift is greater than $drift
      * @throws MinimumDriftExceededException If drift is less than $drift
+     * @throws SignatureMissingException     If signature is missing from request
      * @return boolean
      */
-    public function validateSignature($key, $secret, $timestamp, $signature)
+    public function validateSignature($secret, $method, $host, $path, array $params)
     {
+        if (!isset($params['signature'])) {
+            throw new SignatureMissingException('Request must contain a signature.');
+        }
+
         $currentTimestamp = (int) gmdate('U');
 
-        if ($this->exceedsMaximumDrift($currentTimestamp, $timestamp)) {
+        if ($this->exceedsMaximumDrift($currentTimestamp, $params['timestamp'])) {
             throw new MaximumDriftExceededException(
                 sprintf('Timestamp is more than %d seconds in the future.', $this->getDrift())
             );
         }
 
-        if ($this->exceedsMinimumDrift($currentTimestamp, $timestamp)) {
+        if ($this->exceedsMinimumDrift($currentTimestamp, $params['timestamp'])) {
             throw new MinimumDriftExceededException(
                 sprintf('Timestamp is more than %d seconds in the past.', $this->getDrift())
             );
         }
 
-        $validSignature = \base64_encode(
-            \hash_hmac('sha256', $key . $timestamp, $secret, true)
+        $validSignature = $this->signer->createSignature(
+            $method,
+            $host,
+            $path,
+            $secret,
+            $params
         );
 
-        if ($signature !== $validSignature) {
+        if ($params['signature'] !== $validSignature) {
             return false;
         }
 
@@ -99,5 +129,25 @@ class Server
     public function setDrift($drift)
     {
         $this->drift = (int) $drift;
+    }
+
+    /**
+     * Get Signer
+     *
+     * @return Signer Instance of the signature creation class
+     */
+    public function getSigner()
+    {
+        return $this->signer;
+    }
+
+    /**
+     * Set Signer
+     *
+     * @param Signer $signer Instance of the signature creation class
+     */
+    public function setSigner(Signer $signer)
+    {
+        $this->signer = $signer;
     }
 }
