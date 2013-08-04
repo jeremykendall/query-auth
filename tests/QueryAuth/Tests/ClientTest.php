@@ -3,6 +3,8 @@
 namespace QueryAuthTests;
 
 use QueryAuth\Client;
+use QueryAuth\NormalizedParameterCollection;
+use QueryAuth\Signer;
 
 class ClientTest extends \PHPUnit_Framework_TestCase
 {
@@ -22,52 +24,59 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     private $secret;
 
     /**
-     * @var int
+     * @var string
      */
-    private $timestamp;
+    private $host;
+
+    /**
+     * @var string
+     */
+    private $path;
 
     protected function setUp()
     {
-        $this->client = new Client();
+        $signer = new Signer(new NormalizedParameterCollection());
+        $this->client = new Client($signer);
         $this->key = md5(time());
         $this->secret = base64_encode(time() . 'secret');
-        $this->timestamp = time();
+        $this->host = 'www.example.com';
+        $this->path = '/resources';
     }
 
-    public function testGenerateSignature()
+    protected function tearDown()
     {
-        $signature = $this->client->generateSignature(
-            $this->key, $this->secret, $this->timestamp
-        );
-
-        $this->assertRegexp('/^([A-Za-z0-9+\/]{4})*([A-Za-z0-9+\/]{4}|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{2}==)$/', $signature);
+        $this->client = null;
     }
 
-    public function testSameDataGeneratesSameSignatures()
+    public function testGetSignedRequestParamsForGetRequestWithoutParams()
     {
-        $sig1 = $this->client->generateSignature(
-            $this->key, $this->secret, $this->timestamp
+        $result = $this->client->getSignedRequestParams(
+            $this->key, $this->secret, 'GET', $this->host, $this->path, $params = array()
         );
 
-        $sig2 = $this->client->generateSignature(
-            $this->key, $this->secret, $this->timestamp
-        );
-
-        $this->assertEquals($sig1, $sig2);
+        $this->assertInternalType('array', $result);
+        $this->assertNotEmpty($result);
+        $this->assertArrayHasKey('timestamp', $result);
+        $this->assertArrayHasKey('key', $result);
+        $this->assertArrayHasKey('signature', $result);
+        $this->assertEquals(3, count($result));
     }
 
-    public function testGenerateUrlEncodedSignature()
+    public function testGetSignedRequestParamsForPostRequestWithParams()
     {
-        $encoded = $this->client->generateUrlEncodedSignature(
-            $this->key, $this->secret, $this->timestamp
+        $result = $this->client->getSignedRequestParams(
+            $this->key,
+            $this->secret,
+            'POST',
+            $this->host,
+            $this->path,
+            $params = array('foo' => 'bar', 'baz' => 'bat')
         );
 
-        $signature = $this->client->generateSignature(
-            $this->key, $this->secret, $this->timestamp
-        );
-
-        // Since the same data generates the same sig, the decoded url encoded
-        // signature should match a normal signature
-        $this->assertEquals($signature, urldecode($encoded));
+        $this->assertInternalType('array', $result);
+        $this->assertNotEmpty($result);
+        $this->assertArrayHasKey('foo', $result);
+        $this->assertArrayHasKey('baz', $result);
+        $this->assertEquals(5, count($result));
     }
 }
