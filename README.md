@@ -122,7 +122,6 @@ the [Signature Version 2
 implementation](https://github.com/aws/aws-sdk-php/blob/master/src/Aws/Common/Signature/SignatureV2.php)
 from the [AWS SDK for PHP
 2](https://github.com/aws/aws-sdk-php/blob/master/src/Aws/Common/Signature/SignatureV2.php).
-
 As such, a version of the Apache License Version 2.0 is included with this
 distribution, and the applicable portion of the AWS SDK for PHP 2 NOTICE file
 is included.
