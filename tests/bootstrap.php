@@ -9,12 +9,3 @@ $loader = require realpath(__DIR__ . '/../vendor/autoload.php');
 $loader->add('QueryAuth\\', __DIR__);
 
 define('APPLICATION_PATH', realpath(__DIR__ . '/..'));
-
-function d($expression) {
-    var_dump($expression);
-}
-
-function dd($expression) {
-    d($expression);
-    die();
-}
