@@ -16,6 +16,16 @@ class Signer
         $this->collection = $collection;
     }
 
+    /**
+     * Creates a signature
+     * 
+     * @param string $method The request method
+     * @param string $host   The host
+     * @param string $path   The path
+     * @param string $secret The auth secret
+     * @param array  $params Array of params to set into the collection
+     * @return string The signature
+     */
     public function createSignature($method, $host, $path, $secret, array $params)
     {
         $this->collection->setFromArray($params);
@@ -27,8 +37,9 @@ class Signer
 
         $signature = \base64_encode(\hash_hmac('sha256', $data, $secret, true));
 
+        // For GET requests the signature needs to be URL encoded
         if ($method == 'GET') {
-            return urlencode($signature);
+            $signature = urlencode($signature);
         }
 
         return $signature;

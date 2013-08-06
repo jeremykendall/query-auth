@@ -72,11 +72,8 @@ class Server
             $params
         );
 
-        if ($params['signature'] !== $validSignature) {
-            return false;
-        }
-
-        return true;
+        // Does the signature match what it's supposed to?
+        return $params['signature'] === $validSignature;
     }
 
     /**
@@ -88,11 +85,15 @@ class Server
      */
     protected function exceedsMaximumDrift($now, $timestamp)
     {
+        // Default the return to false
+        $return = false;
+
+        // If the timestamp allows for it set the return to true
         if ($timestamp > $now && ($timestamp - $now) > $this->drift) {
-            return true;
+            $return = true;
         }
 
-        return false;
+        return $return;
     }
 
     /**
@@ -104,11 +105,15 @@ class Server
      */
     protected function exceedsMinimumDrift($now, $timestamp)
     {
+        // Default the return to false
+        $return = false;
+
+        // If the timestamp allows for it set the return to true
         if ($timestamp < $now && ($now - $timestamp) > $this->drift) {
-            return true;
+            $return = true;
         }
 
-        return false;
+        return $return;
     }
 
     /**
