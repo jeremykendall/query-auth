@@ -64,9 +64,7 @@ class SignerTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertNotNull($signature);
-        // GET signature should be URL encoded
-        $decodedSignature = urldecode($signature);
-        $this->assertRegexp($this->base64Pattern, $decodedSignature);
+        $this->assertRegexp($this->base64Pattern, $signature);
     }
 
     public function testCreateSignatureForPOST()
@@ -81,7 +79,6 @@ class SignerTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertNotNull($signature);
-        // GET signature should NOT be URL encoded
         $this->assertRegexp($this->base64Pattern, $signature);
     }
 
