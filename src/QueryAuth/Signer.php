@@ -25,12 +25,6 @@ class Signer
             . $path . "\n"
             . $this->collection->normalize();
 
-        $signature = \base64_encode(\hash_hmac('sha256', $data, $secret, true));
-
-        if ($method == 'GET') {
-            return urlencode($signature);
-        }
-
-        return $signature;
+        return \base64_encode(\hash_hmac('sha256', $data, $secret, true));
     }
 }

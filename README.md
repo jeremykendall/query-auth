@@ -22,7 +22,7 @@ generation.
 
 ### Request Signing
 
-```php
+``` php
 $collection = new QueryAuth\NormalizedParameterCollection();
 $signer = new QueryAuth\Signer($collection);
 $client = new QueryAuth\Client($signer);
@@ -41,11 +41,9 @@ $signedParameters = $client->getSignedRequestParams($key, $secret, $method, $hos
 the querystring (for `GET` requests) or the request body. The parameters are
 those provided to the method (if any), plus `timestamp`, `key`, and `signature`.
 
-**NOTE**: The signature is automatically url encoded if the method is `GET`.
-
 ### Signature Validation
 
-```php
+``` php
 $collection = new QueryAuth\NormalizedParameterCollection();
 $signer = new QueryAuth\Signer($collection);
 $server = new QueryAuth\Server($signer);
@@ -75,7 +73,7 @@ request is valid. The default value can be modified using `Server::setDrift()`.
 
 You can generate API keys and secrets in the following manner.
 
-```php
+``` php
 $randomFactory = new \RandomLib\Factory();
 $keyGenerator = new QueryAuth\KeyGenerator($randomFactory);
 
@@ -97,7 +95,7 @@ Package installation is handled by Composer.
 * If you haven't already, please [install Composer](http://getcomposer.org/doc/00-intro.md#installation-nix)
 * Create `composer.json` in the root of your project:
 
-```json
+``` json
 {
     "require": {
         "jeremykendall/query-auth": "dev-develop"
