@@ -79,4 +79,12 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('baz', $result);
         $this->assertEquals(5, count($result));
     }
+
+    public function testGetSetSigner()
+    {
+        $this->assertInstanceOf('QueryAuth\Signer', $this->client->getSigner());
+        $signature = new Signer(new NormalizedParameterCollection());
+        $this->client->setSigner($signature);
+        $this->assertSame($signature, $this->client->getSigner());
+    }
 }

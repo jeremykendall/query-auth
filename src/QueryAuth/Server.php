@@ -72,11 +72,8 @@ class Server
             $params
         );
 
-        if ($params['signature'] !== $validSignature) {
-            return false;
-        }
-
-        return true;
+        // By @RobertGonzalez from PR #5
+        return $params['signature'] === $validSignature;
     }
 
     /**
