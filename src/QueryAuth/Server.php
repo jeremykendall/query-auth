@@ -1,4 +1,11 @@
 <?php
+/**
+ * Query Auth: Signature generation and validation for REST API query authentication
+ *
+ * @copyright 2013 Jeremy Kendall
+ * @license https://github.com/jeremykendall/query-auth/blob/master/LICENSE MIT
+ * @link https://github.com/jeremykendall/query-auth
+ */
 
 namespace QueryAuth;
 
@@ -7,6 +14,9 @@ use QueryAuth\Exception\MinimumDriftExceededException;
 use QueryAuth\Exception\SignatureMissingException;
 use QueryAuth\Signer;
 
+/**
+ * Validates signatures
+ */
 class Server
 {
     /**
@@ -15,9 +25,7 @@ class Server
     private $drift = 15;
 
     /**
-     * Instance of the signature creation class
-     *
-     * @var Signer
+     * @var Signer Instance of the signature creation class
      */
     private $signer;
 
