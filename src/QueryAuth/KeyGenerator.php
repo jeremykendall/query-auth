@@ -1,13 +1,23 @@
 <?php
+/**
+ * Query Auth: Signature generation and validation for REST API query authentication
+ *
+ * @copyright 2013 Jeremy Kendall
+ * @license https://github.com/jeremykendall/query-auth/blob/master/LICENSE MIT
+ * @link https://github.com/jeremykendall/query-auth
+ */
 
 namespace QueryAuth;
 
 use RandomLib\Factory as RandomFactory;
 
+/**
+ * Creates API keys and secrets
+ */
 class KeyGenerator
 {
     /**
-     * @var RandomFactory
+     * @var RandomFactory Random factory
      */
     private $randomFactory;
 
