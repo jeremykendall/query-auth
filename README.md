@@ -9,16 +9,32 @@ Signature generation and validation for REST API query authentication
 Most APIs require some sort of query authentication: a method of signing API
 requests with an API key and signature.  The signature is usually generated
 using a shared secret.  When you're consuming an API, there are (hopefully) easy
-to follow steps to create signatures and authenticate your API requests. When
-you're writing your own API, you have to whip up both server-side signature
-validation and a client-side signature creation strategy. This library endeavors
-to handle both of those tasks.
+to follow steps to create signatures. When you're writing your own API, you
+have to whip up both server-side signature validation and a client-side
+signature creation strategy. This library endeavors to handle both of those
+tasks; signature creation and signature validation.
+
+## Philosophy
+
+Query Auth is intended to be -- and is written as -- a bare bones library.  Many of
+niceties and abstractions you'd find in a fully featured API library or SDK are
+absent here.  The point of the library is to provide you with the ability to
+focus on writing your API in any way you see fit, without adding any additional
+dependencies to the mix, while allowing you to hand off the query authentication
+to this library.
+
+
+## Sample Implementation
+
+I've provided a [sample implementation of the Query Auth library](https://github.com/jeremykendall/query-auth-impl) 
+in order to better demonstrate how one might employ the library, from both the
+API consumer and API creator perspectives.
 
 ## Usage
 
-There are three components to this library: Request signing for API consumers,
-request signature validation for API creators, and API key and API secret
-generation.
+There are three components to this library: Request signing for API consumers
+and creators, request signature validation for API creators, and API key and
+API secret generation.
 
 ### Request Signing
 

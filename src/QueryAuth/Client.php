@@ -1,13 +1,23 @@
 <?php
+/**
+ * Query Auth: Signature generation and validation for REST API query authentication
+ *
+ * @copyright 2013 Jeremy Kendall
+ * @license https://github.com/jeremykendall/query-auth/blob/master/LICENSE MIT
+ * @link https://github.com/jeremykendall/query-auth
+ */
 
 namespace QueryAuth;
 
 use QueryAuth\Signer;
 
+/**
+ * Signs requests
+ */
 class Client
 {
     /**
-     * @var Signer
+     * @var Signer Instance of Signer
      */
     private $signer;
 
