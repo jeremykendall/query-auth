@@ -52,12 +52,12 @@ class ParameterCollection implements \IteratorAggregate, \ArrayAccess, \Countabl
     }
 
     /**
-     * Adds value
+     * Sets a value
      *
      * @param mixed $key   Key
      * @param mixed $value Value
      */
-    public function add($key, $value)
+    public function set($key, $value)
     {
         $this->container[$key] = $value;
     }

@@ -48,11 +48,11 @@ class ParameterCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(3, count($collection));
     }
 
-    public function testAdd()
+    public function testSet()
     {
         $collection = new ParameterCollection();
-        $collection->add('one', 'uno');
-        $collection->add('two', 'dos');
+        $collection->set('one', 'uno');
+        $collection->set('two', 'dos');
 
         $this->assertEquals(2, count($collection));
         $this->assertEquals('uno', $collection['one']);
