@@ -12,7 +12,7 @@ namespace QueryAuth;
 /**
  * Collection class
  */
-class NormalizedParameterCollection implements \IteratorAggregate, \ArrayAccess, \Countable
+class ParameterCollection implements \IteratorAggregate, \ArrayAccess, \Countable
 {
     /**
      * @var array Holds parameters

@@ -3,7 +3,7 @@
 namespace QueryAuth\Tests;
 
 use QueryAuth\Signer;
-use QueryAuth\NormalizedParameterCollection;
+use QueryAuth\ParameterCollection;
 
 class SignerTest extends \PHPUnit_Framework_TestCase
 {
@@ -39,7 +39,7 @@ class SignerTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->signer = new Signer(new NormalizedParameterCollection());
+        $this->signer = new Signer(new ParameterCollection());
         $this->secret = base64_encode(time() . 'secret');
         $this->host = 'www.example.com';
         $this->path = '/resources';

@@ -39,7 +39,7 @@ API secret generation.
 ### Request Signing
 
 ``` php
-$collection = new QueryAuth\NormalizedParameterCollection();
+$collection = new QueryAuth\ParameterCollection();
 $signer = new QueryAuth\Signer($collection);
 $client = new QueryAuth\Client($signer);
 
@@ -60,7 +60,7 @@ those provided to the method (if any), plus `timestamp`, `key`, and `signature`.
 ### Signature Validation
 
 ``` php
-$collection = new QueryAuth\NormalizedParameterCollection();
+$collection = new QueryAuth\ParameterCollection();
 $signer = new QueryAuth\Signer($collection);
 $server = new QueryAuth\Server($signer);
 
@@ -131,7 +131,7 @@ Package installation is handled by Composer.
 
 ## Credits
 
-* The Client, Signer, and NormalizedParameterCollection code are my own implementation of
+* The Client, Signer, and ParameterCollection code are my own implementation of
 the [Signature Version 2
 implementation](https://github.com/aws/aws-sdk-php/blob/master/src/Aws/Common/Signature/SignatureV2.php)
 from the [AWS SDK for PHP
