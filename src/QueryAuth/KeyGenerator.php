@@ -9,7 +9,7 @@
 
 namespace QueryAuth;
 
-use RandomLib\Generator as Generator;
+use RandomLib\Generator;
 
 /**
  * Creates API keys and secrets
