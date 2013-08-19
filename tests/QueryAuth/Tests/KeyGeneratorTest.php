@@ -16,7 +16,7 @@ class KeyGeneratorTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $factory = new Factory();
-        $this->keyGenerator = $factory->getKeyGenerator();
+        $this->keyGenerator = $factory->newKeyGenerator();
     }
 
     public function testGenerateKey()

@@ -37,7 +37,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $factory = new Factory();
-        $this->client = $factory->getClient();
+        $this->client = $factory->newClient();
         $this->key = md5(time());
         $this->secret = base64_encode(time() . 'secret');
         $this->host = 'www.example.com';

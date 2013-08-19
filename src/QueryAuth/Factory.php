@@ -30,9 +30,9 @@ class Factory
      *
      * @return Client Client instance
      */
-    public function getClient()
+    public function newClient()
     {
-        return new Client($this->getSigner());
+        return new Client($this->newSigner());
     }
 
     /**
@@ -40,15 +40,15 @@ class Factory
      *
      * @return Server Server instance
      */
-    public function getServer()
+    public function newServer()
     {
-        return new Server($this->getSigner());
+        return new Server($this->newSigner());
     }
 
     /**
-     * Gets KeyGenerator created with medium strength RandomLib\Generator
+     * Creates new KeyGenerator created with medium strength RandomLib\Generator
      */
-    public function getKeyGenerator()
+    public function newKeyGenerator()
     {
         return new KeyGenerator(
             $this->getRandomFactory()->getMediumStrengthGenerator()
@@ -60,7 +60,7 @@ class Factory
      *
      * @return Signer Signer instance
      */
-    protected function getSigner()
+    protected function newSigner()
     {
         return new Signer(new ParameterCollection());
     }

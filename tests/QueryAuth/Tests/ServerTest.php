@@ -43,8 +43,8 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $factory = new Factory();
-        $this->server = $factory->getServer();
-        $this->client = $factory->getClient();
+        $this->server = $factory->newServer();
+        $this->client = $factory->newClient();
         $this->key = md5(time());
         $this->secret = base64_encode(time() . 'secret');
         $this->host = 'www.example.com';
