@@ -9,7 +9,7 @@
 
 namespace QueryAuth;
 
-use QueryAuth\NormalizedParameterCollection;
+use QueryAuth\ParameterCollection;
 
 /**
  * Creates signature
@@ -17,16 +17,16 @@ use QueryAuth\NormalizedParameterCollection;
 class Signer
 {
     /**
-     * @var NormalizedParameterCollection Request parameter collection
+     * @var ParameterCollection Request parameter collection
      */
     private $collection;
 
     /**
      * Public constructor
      *
-     * @param NormalizedParameterCollection $collection Parameter collection
+     * @param ParameterCollection $collection Parameter collection
      */
-    public function __construct(NormalizedParameterCollection $collection)
+    public function __construct(ParameterCollection $collection)
     {
         $this->collection = $collection;
     }

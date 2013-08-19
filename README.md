@@ -39,9 +39,8 @@ API secret generation.
 ### Request Signing
 
 ``` php
-$collection = new QueryAuth\NormalizedParameterCollection();
-$signer = new QueryAuth\Signer($collection);
-$client = new QueryAuth\Client($signer);
+$factory = new QueryAuth\Factory();
+$client = $factory->newClient();
 
 $key = 'API_KEY';
 $secret = 'API_SECRET';
@@ -60,9 +59,8 @@ those provided to the method (if any), plus `timestamp`, `key`, and `signature`.
 ### Signature Validation
 
 ``` php
-$collection = new QueryAuth\NormalizedParameterCollection();
-$signer = new QueryAuth\Signer($collection);
-$server = new QueryAuth\Server($signer);
+$factory = new QueryAuth\Factory();
+$server = $factory->newServer();
 
 $secret = 'API_SECRET_FROM_PERSISTENCE_LAYER';
 $method = 'GET';
@@ -90,8 +88,8 @@ request is valid. The default value can be modified using `Server::setDrift()`.
 You can generate API keys and secrets in the following manner.
 
 ``` php
-$randomFactory = new \RandomLib\Factory();
-$keyGenerator = new QueryAuth\KeyGenerator($randomFactory);
+$factory = new QueryAuth\Factory();
+$keyGenerator = $factory->newKeyGenerator();
 
 // 40 character random alphanumeric string
 $key = $keyGenerator->generateKey();
@@ -131,7 +129,7 @@ Package installation is handled by Composer.
 
 ## Credits
 
-* The Client, Signer, and NormalizedParameterCollection code are my own implementation of
+* The Client, Signer, and ParameterCollection code are my own implementation of
 the [Signature Version 2
 implementation](https://github.com/aws/aws-sdk-php/blob/master/src/Aws/Common/Signature/SignatureV2.php)
 from the [AWS SDK for PHP
