@@ -60,16 +60,4 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
         $keyGenerator = $this->factory->getKeyGenerator();
         $this->assertInstanceOf('QueryAuth\KeyGenerator', $keyGenerator);
     }
-
-    protected function getMockRandomFactory()
-    {
-        return $this->getMockBuilder('RandomLib\Factory')->getMock();
-    }
-
-    protected function getMockGenerator()
-    {
-        return $this->getMockBuilder('RandomLib\Generator')
-            ->disableOriginalConstructor()
-            ->getMock();
-    }
 }
