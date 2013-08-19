@@ -2,13 +2,13 @@
 
 namespace QueryAuth\Tests;
 
-use QueryAuth\NormalizedParameterCollection;
+use QueryAuth\ParameterCollection;
 
-class NormalizedParameterCollectionTest extends \PHPUnit_Framework_TestCase
+class ParameterCollectionTest extends \PHPUnit_Framework_TestCase
 {
     public function testNormalize()
     {
-        $collection = new NormalizedParameterCollection(
+        $collection = new ParameterCollection(
             array(
                 'email' => 'sam@example.com',
                 'name' => 'Sam Jones',
@@ -24,7 +24,7 @@ class NormalizedParameterCollectionTest extends \PHPUnit_Framework_TestCase
 
     public function testNormalizeSkipsSignature()
     {
-        $collection = new NormalizedParameterCollection(
+        $collection = new ParameterCollection(
             array(
                 'signature' => 'sig',
                 'email' => 'sam@example.com',
@@ -43,16 +43,16 @@ class NormalizedParameterCollectionTest extends \PHPUnit_Framework_TestCase
 
     public function testImplementsCount()
     {
-        $collection = new NormalizedParameterCollection(array('one', 'two', 'three'));
+        $collection = new ParameterCollection(array('one', 'two', 'three'));
         $this->assertInstanceOf('\Countable', $collection);
         $this->assertEquals(3, count($collection));
     }
 
-    public function testAdd()
+    public function testSet()
     {
-        $collection = new NormalizedParameterCollection();
-        $collection->add('one', 'uno');
-        $collection->add('two', 'dos');
+        $collection = new ParameterCollection();
+        $collection->set('one', 'uno');
+        $collection->set('two', 'dos');
 
         $this->assertEquals(2, count($collection));
         $this->assertEquals('uno', $collection['one']);
@@ -62,7 +62,7 @@ class NormalizedParameterCollectionTest extends \PHPUnit_Framework_TestCase
     public function testSetFromArray()
     {
         $data = array('Zaphod' => 'Beeblebrox', 'Arthur' => 'Dent');
-        $collection = new NormalizedParameterCollection();
+        $collection = new ParameterCollection();
         $collection->setFromArray($data);
         $this->assertEquals($data, $collection->toArray());
     }
@@ -70,20 +70,20 @@ class NormalizedParameterCollectionTest extends \PHPUnit_Framework_TestCase
     public function testToArray()
     {
         $data = array('Zaphod' => 'Beeblebrox', 'Arthur' => 'Dent');
-        $collection = new NormalizedParameterCollection($data);
+        $collection = new ParameterCollection($data);
         $this->assertEquals($data, $collection->toArray());
     }
 
     public function testImplementsIteratorAggregate()
     {
-        $collection = new NormalizedParameterCollection();
+        $collection = new ParameterCollection();
         $this->assertInstanceOf('\IteratorAggregate', $collection);
         $this->assertInstanceOf('\ArrayIterator', $collection->getIterator());
     }
 
     public function testImplementsArrayAccess()
     {
-        $collection = new NormalizedParameterCollection();
+        $collection = new ParameterCollection();
         $this->assertInstanceOf('\ArrayAccess', $collection);
 
         $collection->offsetSet('test', 'first');
