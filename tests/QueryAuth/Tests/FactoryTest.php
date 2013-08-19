@@ -8,18 +8,11 @@ use RandomLib\Factory as RandomFactory;
 class FactoryTest extends \PHPUnit_Framework_TestCase
 {
     private $factory;
-    private $randomFactory;
-    private $generator;
 
     protected function setUp()
     {
         parent::setUp();
         $this->factory = new Factory();
-        $this->randomFactory = $this->getMockBuilder('RandomLib\Factory')
-            ->getMock();
-        $this->generator = $this->getMockBuilder('RandomLib\Generator')
-            ->disableOriginalConstructor()
-            ->getMock();
     }
 
     protected function tearDown()
@@ -51,11 +44,18 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testGetKeyGenerator()
     {
-        $this->factory->setRandomFactory($this->randomFactory);
+        $randomFactory = $this->getMockBuilder('RandomLib\Factory')
+            ->getMock();
 
-        $this->randomFactory->expects($this->once())
+        $generator = $this->getMockBuilder('RandomLib\Generator')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->factory->setRandomFactory($randomFactory);
+
+        $randomFactory->expects($this->once())
             ->method('getMediumStrengthGenerator')
-            ->will($this->returnValue($this->generator));
+            ->will($this->returnValue($generator));
 
         $keyGenerator = $this->factory->getKeyGenerator();
         $this->assertInstanceOf('QueryAuth\KeyGenerator', $keyGenerator);
