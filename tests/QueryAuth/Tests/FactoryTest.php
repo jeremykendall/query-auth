@@ -49,19 +49,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertNotSame($default, $this->factory->getRandomFactory());
     }
 
-    public function testGetLowStrengthKeyGenerator()
-    {
-        $this->factory->setRandomFactory($this->randomFactory);
-
-        $this->randomFactory->expects($this->once())
-            ->method('getLowStrengthGenerator')
-            ->will($this->returnValue($this->generator));
-
-        $keyGenerator = $this->factory->getLowStrengthKeyGenerator();
-        $this->assertInstanceOf('QueryAuth\KeyGenerator', $keyGenerator);
-    }
-
-    public function testGetMediumStrengthKeyGenerator()
+    public function testGetKeyGenerator()
     {
         $this->factory->setRandomFactory($this->randomFactory);
 
@@ -69,7 +57,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
             ->method('getMediumStrengthGenerator')
             ->will($this->returnValue($this->generator));
 
-        $keyGenerator = $this->factory->getMediumStrengthKeyGenerator();
+        $keyGenerator = $this->factory->getKeyGenerator();
         $this->assertInstanceOf('QueryAuth\KeyGenerator', $keyGenerator);
     }
 

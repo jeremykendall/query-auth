@@ -46,19 +46,9 @@ class Factory
     }
 
     /**
-     * Gets KeyGenerator created with low strength RandomLib\Generator
-     */
-    public function getLowStrengthKeyGenerator()
-    {
-        return new KeyGenerator(
-            $this->getRandomFactory()->getLowStrengthGenerator()
-        );
-    }
-
-    /**
      * Gets KeyGenerator created with medium strength RandomLib\Generator
      */
-    public function getMediumStrengthKeyGenerator()
+    public function getKeyGenerator()
     {
         return new KeyGenerator(
             $this->getRandomFactory()->getMediumStrengthGenerator()
