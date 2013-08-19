@@ -3,7 +3,8 @@
 namespace QueryAuth\Tests;
 
 use QueryAuth\Client;
-use QueryAuth\NormalizedParameterCollection;
+use QueryAuth\Factory;
+use QueryAuth\ParameterCollection;
 use QueryAuth\Server;
 use QueryAuth\Signer;
 
@@ -39,17 +40,11 @@ class ServerTest extends \PHPUnit_Framework_TestCase
      */
     private $path;
 
-    /**
-     * @var Signer
-     */
-    private $signer;
-
     protected function setUp()
     {
-        $collection = new NormalizedParameterCollection();
-        $this->signer = new Signer($collection);
-        $this->server = new Server($this->signer);
-        $this->client = new Client($this->signer);
+        $factory = new Factory();
+        $this->server = $factory->newServer();
+        $this->client = $factory->newClient();
         $this->key = md5(time());
         $this->secret = base64_encode(time() . 'secret');
         $this->host = 'www.example.com';
@@ -175,7 +170,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     public function testGetSetSigner()
     {
         $this->assertInstanceOf('QueryAuth\Signer', $this->server->getSigner());
-        $signature = new Signer(new NormalizedParameterCollection());
+        $signature = new Signer(new ParameterCollection());
         $this->server->setSigner($signature);
         $this->assertSame($signature, $this->server->getSigner());
     }

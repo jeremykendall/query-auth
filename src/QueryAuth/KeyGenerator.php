@@ -9,7 +9,7 @@
 
 namespace QueryAuth;
 
-use RandomLib\Factory as RandomFactory;
+use RandomLib\Generator as Generator;
 
 /**
  * Creates API keys and secrets
@@ -17,18 +17,18 @@ use RandomLib\Factory as RandomFactory;
 class KeyGenerator
 {
     /**
-     * @var RandomFactory Random factory
+     * @var Generator RandomLib Generator
      */
-    private $randomFactory;
+    private $generator;
 
     /**
      * Public constructor
      *
-     * @var RandomFactory $randomFactory RandomLib factory
+     * @var Generator $generator RandomLib factory
      */
-    public function __construct(RandomFactory $randomFactory)
+    public function __construct(Generator $generator)
     {
-        $this->randomFactory = $randomFactory;
+        $this->generator = $generator;
     }
 
     /**
@@ -39,9 +39,8 @@ class KeyGenerator
     public function generateKey()
     {
         $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $generator = $this->randomFactory->getMediumStrengthGenerator();
 
-        return $generator->generateString(40, $chars);
+        return $this->generator->generateString(40, $chars);
     }
 
     /**
@@ -51,8 +50,6 @@ class KeyGenerator
      */
     public function generateSecret()
     {
-        $generator = $this->randomFactory->getMediumStrengthGenerator();
-
-        return $generator->generateString(60);
+        return $this->generator->generateString(60);
     }
 }

@@ -3,6 +3,7 @@
 namespace QueryAuth\Tests;
 
 use QueryAuth\KeyGenerator;
+use QueryAuth\Factory;
 use RandomLib\Factory as RandomFactory;
 
 class KeyGeneratorTest extends \PHPUnit_Framework_TestCase
@@ -14,7 +15,8 @@ class KeyGeneratorTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->keyGenerator = new KeyGenerator(new RandomFactory());
+        $factory = new Factory();
+        $this->keyGenerator = $factory->newKeyGenerator();
     }
 
     public function testGenerateKey()
