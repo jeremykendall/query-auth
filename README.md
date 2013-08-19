@@ -39,9 +39,8 @@ API secret generation.
 ### Request Signing
 
 ``` php
-$collection = new QueryAuth\ParameterCollection();
-$signer = new QueryAuth\Signer($collection);
-$client = new QueryAuth\Client($signer);
+$factory = new QueryAuth\Factory();
+$client = $factory->getClient();
 
 $key = 'API_KEY';
 $secret = 'API_SECRET';
@@ -60,9 +59,8 @@ those provided to the method (if any), plus `timestamp`, `key`, and `signature`.
 ### Signature Validation
 
 ``` php
-$collection = new QueryAuth\ParameterCollection();
-$signer = new QueryAuth\Signer($collection);
-$server = new QueryAuth\Server($signer);
+$factory = new QueryAuth\Factory();
+$server = $factory->getServer();
 
 $secret = 'API_SECRET_FROM_PERSISTENCE_LAYER';
 $method = 'GET';
@@ -90,8 +88,8 @@ request is valid. The default value can be modified using `Server::setDrift()`.
 You can generate API keys and secrets in the following manner.
 
 ``` php
-$randomFactory = new \RandomLib\Factory();
-$keyGenerator = new QueryAuth\KeyGenerator($randomFactory);
+$factory = new QueryAuth\Factory();
+$keyGenerator = $factory->getKeyGenerator();
 
 // 40 character random alphanumeric string
 $key = $keyGenerator->generateKey();
