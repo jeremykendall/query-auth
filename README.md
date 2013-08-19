@@ -40,7 +40,7 @@ API secret generation.
 
 ``` php
 $factory = new QueryAuth\Factory();
-$client = $factory->getClient();
+$client = $factory->newClient();
 
 $key = 'API_KEY';
 $secret = 'API_SECRET';
@@ -60,7 +60,7 @@ those provided to the method (if any), plus `timestamp`, `key`, and `signature`.
 
 ``` php
 $factory = new QueryAuth\Factory();
-$server = $factory->getServer();
+$server = $factory->newServer();
 
 $secret = 'API_SECRET_FROM_PERSISTENCE_LAYER';
 $method = 'GET';
@@ -89,7 +89,7 @@ You can generate API keys and secrets in the following manner.
 
 ``` php
 $factory = new QueryAuth\Factory();
-$keyGenerator = $factory->getKeyGenerator();
+$keyGenerator = $factory->newKeyGenerator();
 
 // 40 character random alphanumeric string
 $key = $keyGenerator->generateKey();
