@@ -3,6 +3,7 @@
 namespace QueryAuthTests;
 
 use QueryAuth\Client;
+use QueryAuth\Factory;
 use QueryAuth\ParameterCollection;
 use QueryAuth\Signer;
 
@@ -35,8 +36,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $signer = new Signer(new ParameterCollection());
-        $this->client = new Client($signer);
+        $factory = new Factory();
+        $this->client = $factory->getClient();
         $this->key = md5(time());
         $this->secret = base64_encode(time() . 'secret');
         $this->host = 'www.example.com';

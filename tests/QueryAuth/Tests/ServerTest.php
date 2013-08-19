@@ -3,6 +3,7 @@
 namespace QueryAuth\Tests;
 
 use QueryAuth\Client;
+use QueryAuth\Factory;
 use QueryAuth\ParameterCollection;
 use QueryAuth\Server;
 use QueryAuth\Signer;
@@ -39,17 +40,11 @@ class ServerTest extends \PHPUnit_Framework_TestCase
      */
     private $path;
 
-    /**
-     * @var Signer
-     */
-    private $signer;
-
     protected function setUp()
     {
-        $collection = new ParameterCollection();
-        $this->signer = new Signer($collection);
-        $this->server = new Server($this->signer);
-        $this->client = new Client($this->signer);
+        $factory = new Factory();
+        $this->server = $factory->getServer();
+        $this->client = $factory->getClient();
         $this->key = md5(time());
         $this->secret = base64_encode(time() . 'secret');
         $this->host = 'www.example.com';
