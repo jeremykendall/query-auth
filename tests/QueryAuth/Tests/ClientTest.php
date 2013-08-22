@@ -4,8 +4,10 @@ namespace QueryAuthTests;
 
 use QueryAuth\Client;
 use QueryAuth\Factory;
+use QueryAuth\KeyGenerator;
 use QueryAuth\ParameterCollection;
 use QueryAuth\Signer;
+use RandomLib\Factory as RandomFactory;
 
 class ClientTest extends \PHPUnit_Framework_TestCase
 {
@@ -58,9 +60,10 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertInternalType('array', $result);
         $this->assertNotEmpty($result);
         $this->assertArrayHasKey('timestamp', $result);
+        $this->assertArrayHasKey('cnonce', $result);
         $this->assertArrayHasKey('key', $result);
         $this->assertArrayHasKey('signature', $result);
-        $this->assertEquals(3, count($result));
+        $this->assertEquals(4, count($result));
     }
 
     public function testGetSignedRequestParamsForPostRequestWithParams()
@@ -78,7 +81,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertNotEmpty($result);
         $this->assertArrayHasKey('foo', $result);
         $this->assertArrayHasKey('baz', $result);
-        $this->assertEquals(5, count($result));
+        $this->assertEquals(6, count($result));
     }
 
     public function testGetSetSigner()
@@ -87,5 +90,14 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $signature = new Signer(new ParameterCollection());
         $this->client->setSigner($signature);
         $this->assertSame($signature, $this->client->getSigner());
+    }
+
+    public function testGetSetKeyGenerator()
+    {
+        $this->assertInstanceOf('QueryAuth\KeyGenerator', $this->client->getKeyGenerator());
+        $randomFactory = new RandomFactory();
+        $keyGenerator = new KeyGenerator($randomFactory->getMediumStrengthGenerator());
+        $this->client->setKeyGenerator($keyGenerator);
+        $this->assertSame($keyGenerator, $this->client->getKeyGenerator());
     }
 }

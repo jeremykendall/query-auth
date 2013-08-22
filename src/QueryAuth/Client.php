@@ -9,6 +9,7 @@
 
 namespace QueryAuth;
 
+use QueryAuth\KeyGenerator;
 use QueryAuth\Signer;
 
 /**
@@ -22,13 +23,19 @@ class Client
     private $signer;
 
     /**
+     * @var KeyGenerator Instance of KeyGenerator
+     */
+    private $keyGenerator;
+
+    /**
      * Public constructor
      *
      * @param Signer $signer Instance of singature creation class
      */
-    public function __construct(Signer $signer)
+    public function __construct(Signer $signer, KeyGenerator $keyGenerator)
     {
         $this->signer = $signer;
+        $this->keyGenerator = $keyGenerator;
     }
 
     /**
@@ -46,6 +53,7 @@ class Client
     {
         $params['key'] = $key;
         $params['timestamp'] = (int) gmdate('U');
+        $params['cnonce'] = $this->keyGenerator->generateNonce();
         // Ensure path is absolute
         $path = '/' . ltrim($path, '/');
         $signature = $this->signer->createSignature($method, $host, $path, $secret, $params);
@@ -72,5 +80,25 @@ class Client
     public function setSigner(Signer $signer)
     {
         $this->signer = $signer;
+    }
+    
+    /**
+     * Gets instance of KeyGenerator
+     *
+     * @return KeyGenerator Instance of KeyGenerator
+     */
+    public function getKeyGenerator()
+    {
+        return $this->keyGenerator;
+    }
+    
+    /**
+     * Sets instance of KeyGenerator
+     *
+     * @param KeyGenerator Instance of KeyGenerator
+     */
+    public function setKeyGenerator(KeyGenerator $keyGenerator)
+    {
+        $this->keyGenerator = $keyGenerator;
     }
 }
