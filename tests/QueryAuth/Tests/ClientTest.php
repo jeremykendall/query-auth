@@ -84,6 +84,31 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(6, count($result));
     }
 
+    public function testSignaturesWithSameDataAndTimestampAreUnique()
+    {
+        $this->client->setTimestamp(gmdate('U'));
+
+        $result1 = $this->client->getSignedRequestParams(
+            $this->key,
+            $this->secret,
+            'POST',
+            $this->host,
+            $this->path,
+            $params = array('foo' => 'bar', 'baz' => 'bat')
+        );
+
+        $result2 = $this->client->getSignedRequestParams(
+            $this->key,
+            $this->secret,
+            'POST',
+            $this->host,
+            $this->path,
+            $params = array('foo' => 'bar', 'baz' => 'bat')
+        );
+
+        $this->assertNotEquals($result1, $result2);
+    }
+
     public function testGetSetSigner()
     {
         $this->assertInstanceOf('QueryAuth\Signer', $this->client->getSigner());
@@ -99,5 +124,16 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $keyGenerator = new KeyGenerator($randomFactory->getMediumStrengthGenerator());
         $this->client->setKeyGenerator($keyGenerator);
         $this->assertSame($keyGenerator, $this->client->getKeyGenerator());
+    }
+
+    public function testGetSetTimestamp()
+    {
+        $default = $this->client->getTimestamp();
+        $this->assertLessThanOrEqual(gmdate('U'), $default);
+        $this->assertNotNull($default);
+        $this->assertInternalType('int', $default);
+        $new = gmdate('U');
+        $this->client->setTimestamp($new);
+        $this->assertEquals($new, $this->client->getTimestamp());
     }
 }

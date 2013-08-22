@@ -28,6 +28,11 @@ class Client
     private $keyGenerator;
 
     /**
+     * @var int Unix timestamp
+     */
+    private $timestamp;
+
+    /**
      * Public constructor
      *
      * @param Signer $signer Instance of singature creation class
@@ -52,7 +57,7 @@ class Client
     public function getSignedRequestParams($key, $secret, $method, $host, $path, array $params = array())
     {
         $params['key'] = $key;
-        $params['timestamp'] = (int) gmdate('U');
+        $params['timestamp'] = $this->getTimestamp();
         $params['cnonce'] = $this->keyGenerator->generateNonce();
         // Ensure path is absolute
         $path = '/' . ltrim($path, '/');
@@ -100,5 +105,31 @@ class Client
     public function setKeyGenerator(KeyGenerator $keyGenerator)
     {
         $this->keyGenerator = $keyGenerator;
+    }
+    
+    /**
+     * Get timestamp
+     *
+     * Returns GMT timestamp if timestamp has not been set.
+     *
+     * @return int timestamp
+     */
+    public function getTimestamp()
+    {
+        if ($this->timestamp === null) {
+            $this->timestamp = (int) gmdate('U');
+        }
+
+        return $this->timestamp;
+    }
+    
+    /**
+     * Set timestamp
+     *
+     * @param int $timestamp
+     */
+    public function setTimestamp($timestamp)
+    {
+        $this->timestamp = $timestamp;
     }
 }
