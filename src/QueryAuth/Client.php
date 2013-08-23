@@ -86,7 +86,7 @@ class Client
     {
         $this->signer = $signer;
     }
-    
+
     /**
      * Gets instance of KeyGenerator
      *
@@ -96,7 +96,7 @@ class Client
     {
         return $this->keyGenerator;
     }
-    
+
     /**
      * Sets instance of KeyGenerator
      *
@@ -106,7 +106,7 @@ class Client
     {
         $this->keyGenerator = $keyGenerator;
     }
-    
+
     /**
      * Get timestamp
      *
@@ -122,7 +122,7 @@ class Client
 
         return $this->timestamp;
     }
-    
+
     /**
      * Set timestamp
      *
