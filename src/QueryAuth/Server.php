@@ -9,8 +9,7 @@
 
 namespace QueryAuth;
 
-use QueryAuth\Exception\MaximumDriftExceededException;
-use QueryAuth\Exception\MinimumDriftExceededException;
+use QueryAuth\Exception\TimeOutOfBoundsException;
 use QueryAuth\Exception\SignatureMissingException;
 use QueryAuth\Signer;
 
@@ -42,14 +41,13 @@ class Server
     /**
      * Is signature valid?
      *
-     * @param  string                        $secret API secret
-     * @param  string                        $method Request method (GET, POST, PUT, HEAD, etc)
-     * @param  string                        $host   Host portion of API resource URL (including subdomain, excluding scheme)
-     * @param  string                        $path   Path portion of API resource URL (excluding query and fragment)
-     * @param  array                         $params Request params
-     * @throws MaximumDriftExceededException If drift is greater than $drift
-     * @throws MinimumDriftExceededException If drift is less than $drift
-     * @throws SignatureMissingException     If signature is missing from request
+     * @param  string                    $secret API secret
+     * @param  string                    $method Request method (GET, POST, PUT, HEAD, etc)
+     * @param  string                    $host   Host portion of API resource URL (including subdomain, excluding scheme)
+     * @param  string                    $path   Path portion of API resource URL (excluding query and fragment)
+     * @param  array                     $params Request params
+     * @throws TimeOutOfBoundsException  If timestamp greater than or less than allowable drift
+     * @throws SignatureMissingException If signature is missing from request
      * @return boolean
      */
     public function validateSignature($secret, $method, $host, $path, array $params)
@@ -60,15 +58,9 @@ class Server
 
         $currentTimestamp = (int) gmdate('U');
 
-        if ($this->exceedsMaximumDrift($currentTimestamp, $params['timestamp'])) {
-            throw new MaximumDriftExceededException(
-                sprintf('Timestamp is more than %d seconds in the future.', $this->getDrift())
-            );
-        }
-
-        if ($this->exceedsMinimumDrift($currentTimestamp, $params['timestamp'])) {
-            throw new MinimumDriftExceededException(
-                sprintf('Timestamp is more than %d seconds in the past.', $this->getDrift())
+        if ($this->timeOutOfBounds($currentTimestamp, $params['timestamp'])) {
+            throw new TimeOutOfBoundsException(
+                sprintf('Timestamp is beyond the +-%d second difference allowed.', $this->getDrift())
             );
         }
 
@@ -85,31 +77,15 @@ class Server
     }
 
     /**
-     * Is $timestamp more than $drift seconds in the future?
+     * Is $timestamp greater than or less than $drift seconds?
      *
      * @param  int     $now       GMT server timestamp
      * @param  int     $timestamp GMT timestamp from request
      * @return boolean
      */
-    protected function exceedsMaximumDrift($now, $timestamp)
+    protected function timeOutOfBounds($now, $timestamp)
     {
-        if ($timestamp > $now && ($timestamp - $now) > $this->drift) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Is $timestamp more than $drift seconds in the past?
-     *
-     * @param  int     $now       GMT server timestamp
-     * @param  int     $timestamp GMT timestamp from request
-     * @return boolean
-     */
-    protected function exceedsMinimumDrift($now, $timestamp)
-    {
-        if ($timestamp < $now && ($now - $timestamp) > $this->drift) {
+        if (abs($timestamp - $now) > $this->drift) {
             return true;
         }
 

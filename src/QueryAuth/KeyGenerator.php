@@ -52,4 +52,14 @@ class KeyGenerator
     {
         return $this->generator->generateString(60);
     }
+
+    /**
+     * Returns 64 character alphanumeric plus '.' and '/' random string
+     *
+     * @return string Nonce
+     */
+    public function generateNonce()
+    {
+        return $this->generator->generateString(64);
+    }
 }
