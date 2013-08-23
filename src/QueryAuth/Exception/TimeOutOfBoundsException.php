@@ -10,7 +10,7 @@
 namespace QueryAuth\Exception;
 
 /**
- * Thrown when request timestamp is out of allowable clock drift
+ * Thrown when request timestamp is beyond allowable clock drift
  */
 class TimeOutOfBoundsException extends \OutOfBoundsException
 {
