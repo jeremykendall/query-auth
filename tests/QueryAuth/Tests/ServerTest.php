@@ -103,7 +103,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException(
             'QueryAuth\Exception\TimeOutOfBoundsException',
             sprintf(
-                'Timestamp is more than +-%d seconds than allowed.',
+                'Timestamp is beyond the +-%d second difference allowed.',
                 $this->server->getDrift()
             )
         );
@@ -124,7 +124,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException(
             'QueryAuth\Exception\TimeOutOfBoundsException',
             sprintf(
-                'Timestamp is more than +-%d seconds than allowed.',
+                'Timestamp is beyond the +-%d second difference allowed.',
                 $this->server->getDrift()
             )
         );

@@ -9,8 +9,6 @@
 
 namespace QueryAuth;
 
-use QueryAuth\Exception\MaximumDriftExceededException;
-use QueryAuth\Exception\MinimumDriftExceededException;
 use QueryAuth\Exception\TimeOutOfBoundsException;
 use QueryAuth\Exception\SignatureMissingException;
 use QueryAuth\Signer;
@@ -62,7 +60,7 @@ class Server
 
         if ($this->timeOutOfBounds($currentTimestamp, $params['timestamp'])) {
             throw new TimeOutOfBoundsException(
-                sprintf('Timestamp is more than +-%d seconds than allowed.', $this->getDrift())
+                sprintf('Timestamp is beyond the +-%d second difference allowed.', $this->getDrift())
             );
         }
 
