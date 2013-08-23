@@ -27,6 +27,11 @@ interface SignatureStorage
      * If a signature is found in the persistence layer, then it has already
      * been used and the associated request should be denied.
      *
+     * If the persistence layer will return an error or throw an exception when
+     * a duplicate apikey and signature are inserted, you don't have to use
+     * this method to check for a key.  Simply attempt to save the signature and
+     * check for the exception.
+     *
      * @param  string  $key       API key of the requster
      * @param  string  $signature Request signature
      * @return boolean True if signature exists, false if not
@@ -38,7 +43,7 @@ interface SignatureStorage
      *
      * @param string  $key       API key of the requster
      * @param string  $signature Request signature
-     * @param integer $expires   Expiration timestamp (request timestamp + drift)
+     * @param integer $expires   Expiration timestamp
      */
     public function save($key, $signature, $expires);
 
