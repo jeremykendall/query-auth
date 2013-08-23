@@ -9,6 +9,7 @@
 
 namespace QueryAuth;
 
+use QueryAuth\KeyGenerator;
 use QueryAuth\Signer;
 
 /**
@@ -22,13 +23,24 @@ class Client
     private $signer;
 
     /**
+     * @var KeyGenerator Instance of KeyGenerator
+     */
+    private $keyGenerator;
+
+    /**
+     * @var int Unix timestamp
+     */
+    private $timestamp;
+
+    /**
      * Public constructor
      *
      * @param Signer $signer Instance of singature creation class
      */
-    public function __construct(Signer $signer)
+    public function __construct(Signer $signer, KeyGenerator $keyGenerator)
     {
         $this->signer = $signer;
+        $this->keyGenerator = $keyGenerator;
     }
 
     /**
@@ -45,7 +57,8 @@ class Client
     public function getSignedRequestParams($key, $secret, $method, $host, $path, array $params = array())
     {
         $params['key'] = $key;
-        $params['timestamp'] = (int) gmdate('U');
+        $params['timestamp'] = $this->getTimestamp();
+        $params['cnonce'] = $this->keyGenerator->generateNonce();
         // Ensure path is absolute
         $path = '/' . ltrim($path, '/');
         $signature = $this->signer->createSignature($method, $host, $path, $secret, $params);
@@ -72,5 +85,51 @@ class Client
     public function setSigner(Signer $signer)
     {
         $this->signer = $signer;
+    }
+
+    /**
+     * Gets instance of KeyGenerator
+     *
+     * @return KeyGenerator Instance of KeyGenerator
+     */
+    public function getKeyGenerator()
+    {
+        return $this->keyGenerator;
+    }
+
+    /**
+     * Sets instance of KeyGenerator
+     *
+     * @param KeyGenerator Instance of KeyGenerator
+     */
+    public function setKeyGenerator(KeyGenerator $keyGenerator)
+    {
+        $this->keyGenerator = $keyGenerator;
+    }
+
+    /**
+     * Get timestamp
+     *
+     * Returns GMT timestamp if timestamp has not been set.
+     *
+     * @return int timestamp
+     */
+    public function getTimestamp()
+    {
+        if ($this->timestamp === null) {
+            $this->timestamp = (int) gmdate('U');
+        }
+
+        return $this->timestamp;
+    }
+
+    /**
+     * Set timestamp
+     *
+     * @param int $timestamp
+     */
+    public function setTimestamp($timestamp)
+    {
+        $this->timestamp = $timestamp;
     }
 }

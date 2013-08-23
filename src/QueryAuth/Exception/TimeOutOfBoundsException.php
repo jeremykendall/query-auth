@@ -10,8 +10,8 @@
 namespace QueryAuth\Exception;
 
 /**
- * Exception thrown when minimum drift is exceeded
+ * Thrown when request timestamp is beyond allowable clock drift
  */
-class MinimumDriftExceededException extends \Exception
+class TimeOutOfBoundsException extends \OutOfBoundsException
 {
 }

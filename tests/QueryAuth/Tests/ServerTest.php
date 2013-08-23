@@ -101,9 +101,9 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     public function testExceedsMaximumDriftThrowsException()
     {
         $this->setExpectedException(
-            'QueryAuth\Exception\MaximumDriftExceededException',
+            'QueryAuth\Exception\TimeOutOfBoundsException',
             sprintf(
-                'Timestamp is more than %d seconds in the future.',
+                'Timestamp is beyond the +-%d second difference allowed.',
                 $this->server->getDrift()
             )
         );
@@ -122,9 +122,9 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     public function testExceedsMinimumDriftThrowsException()
     {
         $this->setExpectedException(
-            'QueryAuth\Exception\MinimumDriftExceededException',
+            'QueryAuth\Exception\TimeOutOfBoundsException',
             sprintf(
-                'Timestamp is more than %d seconds in the past.',
+                'Timestamp is beyond the +-%d second difference allowed.',
                 $this->server->getDrift()
             )
         );

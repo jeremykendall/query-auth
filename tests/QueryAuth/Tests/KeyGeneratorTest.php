@@ -30,4 +30,10 @@ class KeyGeneratorTest extends \PHPUnit_Framework_TestCase
         $secret = $this->keyGenerator->generateSecret();
         $this->assertRegexp('/^[0-9A-Za-z\/\.]{60}$/', $secret);
     }
+    
+    public function testGenerateNonce()
+    {
+        $secret = $this->keyGenerator->generateNonce();
+        $this->assertRegexp('/^[0-9A-Za-z\/\.]{64}$/', $secret);
+    }
 }
