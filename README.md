@@ -90,13 +90,16 @@ The strategy in place here follows this general outline:
 * Validate incoming signature
 * If the signature is valid, check the storage layer to see if that combination of
 API key and signature have been used before
-* If they have, the request is likely a replay attack
+* If they have, the request is likely a replay attack and should be denied
 * If they have not, persist the API key, signature, and an expiration timestamp
 * Routinely purge records with a timestamp beyond the expiration time
 
 **IMPORTANT**: The signature expiration timestamp should be greater than
 maximum allowable drift.  Deleting a signature too soon can leave you vulnerable
 to a replay attack.
+
+**NOTE**: Implementing a replay prevention strategy is optional. It is not a requirement
+for using this library.  It is, however, *highly* recommended.
 
 The [`QueryAuth\Storage\SignatureStorage`](https://github.com/jeremykendall/query-auth/blob/master/src/QueryAuth/Storage/SignatureStorage.php)
 interface is provided to aid in implementing replay attack prevention.
@@ -116,7 +119,7 @@ interface SignatureStorage
 }
 ```
 
-**NOTE**: Using the `SignatureStorage` interface is not required to prevent
+**NOTE**: Implementing the `SignatureStorage` interface is not required to prevent
 replay attacks, it's simply present to assist you in implementing the attack
 prevention strategy outlined above.
 
