@@ -83,6 +83,43 @@ throw one of three exceptions:
 Drift defaults to 15 seconds, meaning there is a 30 second window during which the
 request is valid. The default value can be modified using `Server::setDrift()`.
 
+### Replay Attack Prevention
+
+There are a number of strategies available to prevent [replay attacks](http://en.wikipedia.org/wiki/Replay_attack).
+The strategy in place here follows this general outline:
+* Validate incoming signature
+* If the signature is valid, check the storage layer to see if that combination of
+API key and signature have been used before
+* If they have, the request is likely a replay attack
+* If they have not, persist the API key, signature, and an expiration timestamp
+* Routinely purge records with a timestamp beyond the expiration time
+
+**IMPORTANT**: The signature expiration timestamp should be greater than
+maximum allowable drift.  Deleting a signature too soon can leave you vulnerable
+to a replay attack.
+
+The [`QueryAuth\Storage\SignatureStorage`](https://github.com/jeremykendall/query-auth/blob/master/src/QueryAuth/Storage/SignatureStorage.php)
+interface is provided to aid in implementing replay attack prevention.
+
+``` php
+<?php
+
+namespace QueryAuth\Storage;
+
+interface SignatureStorage
+{
+    public function exists($key, $signature);
+
+    public function save($key, $signature, $expires);
+
+    public function purge();
+}
+```
+
+**NOTE**: Using the `SignatureStorage` interface is not required to prevent
+replay attacks, it's simply present to assist you in implementing the attack
+prevention strategy outlined above.
+
 ### Key Generation
 
 You can generate API keys and secrets in the following manner.
