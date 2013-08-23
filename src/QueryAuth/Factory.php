@@ -32,7 +32,7 @@ class Factory
      */
     public function newClient()
     {
-        return new Client($this->newSigner());
+        return new Client($this->newSigner(), $this->newKeyGenerator());
     }
 
     /**
