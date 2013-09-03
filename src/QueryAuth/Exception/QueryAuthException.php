@@ -9,9 +9,4 @@
 
 namespace QueryAuth\Exception;
 
-/**
- * Exception thrown when Signature is missing
- */
-class SignatureMissingException extends \Exception implements QueryAuthException
-{
-}
+interface QueryAuthException {}
