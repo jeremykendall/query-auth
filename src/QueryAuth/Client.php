@@ -10,7 +10,7 @@
 namespace QueryAuth;
 
 use QueryAuth\KeyGenerator;
-use QueryAuth\Signer;
+use QueryAuth\Signer\SignatureSigner;
 
 /**
  * Signs requests
@@ -37,7 +37,7 @@ class Client
      *
      * @param Signer $signer Instance of singature creation class
      */
-    public function __construct(Signer $signer, KeyGenerator $keyGenerator)
+    public function __construct(SignatureSigner $signer, KeyGenerator $keyGenerator)
     {
         $this->signer = $signer;
         $this->keyGenerator = $keyGenerator;
@@ -82,7 +82,7 @@ class Client
      *
      * @param Signer $signer Instance of the signature creation class
      */
-    public function setSigner(Signer $signer)
+    public function setSigner(SignatureSigner $signer)
     {
         $this->signer = $signer;
     }

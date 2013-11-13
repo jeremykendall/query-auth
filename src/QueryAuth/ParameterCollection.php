@@ -45,10 +45,29 @@ class ParameterCollection implements \IteratorAggregate, \ArrayAccess, \Countabl
                 continue;
             }
 
-            $normalized .= rawurlencode($key) . '=' . rawurlencode($value) . '&';
+            $normalized .= $this->rawurlencode($key, $value);
         }
 
         return substr($normalized, 0, -1);
+    }
+    
+    public function rawurlencode($key, $value)
+    {
+        $normalized = '';
+        
+        if (is_array($value)) {
+            foreach ($value as $childKey => $childValue) {
+                $childKey = str_replace('[]', '', $key) . '[' . $childKey . ']';
+                
+                $normalized .= $this->rawurlencode($childKey, $childValue);
+            }
+            
+            return $normalized;
+        }
+        
+        $normalized .= rawurlencode($key) . '=' . rawurlencode($value) . '&';
+        
+        return $normalized;
     }
 
     /**
