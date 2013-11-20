@@ -7,6 +7,7 @@ use QueryAuth\Factory;
 use QueryAuth\ParameterCollection;
 use QueryAuth\Server;
 use QueryAuth\Signer;
+use QueryAuth\Signer\SignatureSigner;
 
 class ServerTest extends \PHPUnit_Framework_TestCase
 {
@@ -169,7 +170,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
 
     public function testGetSetSigner()
     {
-        $this->assertInstanceOf('QueryAuth\Signer', $this->server->getSigner());
+        $this->assertInstanceOf('QueryAuth\Signer\SignatureSigner', $this->server->getSigner());
         $signature = new Signer(new ParameterCollection());
         $this->server->setSigner($signature);
         $this->assertSame($signature, $this->server->getSigner());
