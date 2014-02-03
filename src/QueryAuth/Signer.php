@@ -9,12 +9,13 @@
 
 namespace QueryAuth;
 
-use QueryAuth\ParameterCollection;
+use QueryAuth\ParameterCollection,
+    QueryAuth\Signer\SignatureSigner;
 
 /**
  * Creates signature
  */
-class Signer
+class Signer implements SignatureSigner
 {
     /**
      * @var ParameterCollection Request parameter collection

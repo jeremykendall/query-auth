@@ -7,6 +7,7 @@ use QueryAuth\Factory;
 use QueryAuth\KeyGenerator;
 use QueryAuth\ParameterCollection;
 use QueryAuth\Signer;
+use QueryAuth\Signer\SignatureSigner;
 use RandomLib\Factory as RandomFactory;
 
 class ClientTest extends \PHPUnit_Framework_TestCase
@@ -111,7 +112,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testGetSetSigner()
     {
-        $this->assertInstanceOf('QueryAuth\Signer', $this->client->getSigner());
+        $this->assertInstanceOf('QueryAuth\Signer\SignatureSigner', $this->client->getSigner());
         $signature = new Signer(new ParameterCollection());
         $this->client->setSigner($signature);
         $this->assertSame($signature, $this->client->getSigner());

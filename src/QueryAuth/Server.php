@@ -11,7 +11,7 @@ namespace QueryAuth;
 
 use QueryAuth\Exception\TimeOutOfBoundsException;
 use QueryAuth\Exception\SignatureMissingException;
-use QueryAuth\Signer;
+use QueryAuth\Signer\SignatureSigner;
 
 /**
  * Validates signatures
@@ -33,7 +33,7 @@ class Server
      *
      * @param Signer $signer Instance of the signature creation class
      */
-    public function __construct(Signer $signer)
+    public function __construct(SignatureSigner $signer)
     {
         $this->signer = $signer;
     }
@@ -127,7 +127,7 @@ class Server
      *
      * @param Signer $signer Instance of the signature creation class
      */
-    public function setSigner(Signer $signer)
+    public function setSigner(SignatureSigner $signer)
     {
         $this->signer = $signer;
     }
