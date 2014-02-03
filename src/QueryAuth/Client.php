@@ -18,7 +18,7 @@ use QueryAuth\Signer\SignatureSigner;
 class Client
 {
     /**
-     * @var Signer Instance of Signer
+     * @var Signer Instance of SignatureSigner
      */
     private $signer;
 
