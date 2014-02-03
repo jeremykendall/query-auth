@@ -9,8 +9,8 @@
 
 namespace QueryAuth;
 
-use QueryAuth\ParameterCollection,
-    QueryAuth\Signer\SignatureSigner;
+use QueryAuth\ParameterCollection;
+use QueryAuth\Signer\SignatureSigner;
 
 /**
  * Creates signature
