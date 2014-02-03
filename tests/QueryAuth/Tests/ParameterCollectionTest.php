@@ -40,7 +40,7 @@ class ParameterCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function testNormalizeSkipsSignature()
+    public function testNormalizeDoesNotEncodeSignature()
     {
         $collection = new ParameterCollection(
             array(

@@ -38,36 +38,19 @@ class ParameterCollection implements \IteratorAggregate, \ArrayAccess, \Countabl
     {
         uksort($this->container, 'strcmp');
 
-        $normalized = '';
-
-        foreach ($this->container as $key => $value) {
-            if ($key == 'signature') {
-                continue;
-            }
-
-            $normalized .= $this->rawurlencode($key, $value);
+        if ($signature = $this->offsetGet('signature')) {
+            // Do not encode signature
+            $this->offsetUnset('signature');
         }
 
-        return substr($normalized, 0, -1);
-    }
-    
-    public function rawurlencode($key, $value)
-    {
-        $normalized = '';
-        
-        if (is_array($value)) {
-            foreach ($value as $childKey => $childValue) {
-                $childKey = str_replace('[]', '', $key) . '[' . $childKey . ']';
-                
-                $normalized .= $this->rawurlencode($childKey, $childValue);
-            }
-            
-            return $normalized;
+        $query = http_build_query($this->container, null, '&', PHP_QUERY_RFC3986);
+
+        if ($signature) {
+            // Replace signature
+            $this->offsetSet('signature', $signature);
         }
-        
-        $normalized .= rawurlencode($key) . '=' . rawurlencode($value) . '&';
-        
-        return $normalized;
+
+        return $query;
     }
 
     /**
