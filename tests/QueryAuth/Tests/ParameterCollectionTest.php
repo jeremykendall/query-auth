@@ -21,6 +21,24 @@ class ParameterCollectionTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expected, $actual);
     }
+    
+    public function testNormalizeMultiValues()
+    {
+        $collection = new ParameterCollection(
+            array(
+                'tags' => array('rock', 'sam'),
+                'posts' => array(
+                    array('id' => 1, 'title' => "Single post title!"),
+                    array('id' => 2, 'title' => 'Another post')
+                )
+            )
+        );
+
+        $expected = 'posts%5B0%5D%5Bid%5D=1&posts%5B0%5D%5Btitle%5D=Single%20post%20title%21&posts%5B1%5D%5Bid%5D=2&posts%5B1%5D%5Btitle%5D=Another%20post&tags%5B0%5D=rock&tags%5B1%5D=sam';
+        $actual = $collection->normalize();
+
+        $this->assertEquals($expected, $actual);
+    }
 
     public function testNormalizeSkipsSignature()
     {
