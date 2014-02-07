@@ -24,7 +24,7 @@ class ParameterCollection implements \IteratorAggregate, \ArrayAccess, \Countabl
      *
      * @param array $data Data to hold in collection
      */
-    public function __construct(array $data = array())
+    public function __construct(array $data = [])
     {
         $this->container = $data;
     }

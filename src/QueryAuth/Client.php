@@ -54,7 +54,7 @@ class Client
      * @param  array  $params OPTIONAL Request params (query or POST fields), only needed if required by endpoint
      * @return array  Request params provided PLUS key, timestamp, and signature
      */
-    public function getSignedRequestParams($key, $secret, $method, $host, $path, array $params = array())
+    public function getSignedRequestParams($key, $secret, $method, $host, $path, array $params = [])
     {
         $params['key'] = $key;
         $params['timestamp'] = $this->getTimestamp();
