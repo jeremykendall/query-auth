@@ -1,6 +1,6 @@
 <?php
 
-namespace QueryAuth\Tests;
+namespace QueryAuth;
 
 use QueryAuth\Factory;
 use RandomLib\Factory as RandomFactory;

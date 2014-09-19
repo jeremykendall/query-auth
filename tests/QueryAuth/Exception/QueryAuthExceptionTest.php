@@ -1,10 +1,6 @@
 <?php
 
-namespace QueryAuth\Tests;
-
-use QueryAuth\Exception\QueryAuthException;
-use QueryAuth\Exception\SignatureMissingException;
-use QueryAuth\Exception\TimeOutOfBoundsException;
+namespace QueryAuth\Exception;
 
 class QueryAuthExceptionTest extends \PHPUnit_Framework_TestCase
 {

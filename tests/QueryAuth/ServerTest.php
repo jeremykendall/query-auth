@@ -1,12 +1,7 @@
 <?php
 
-namespace QueryAuth\Tests;
+namespace QueryAuth;
 
-use QueryAuth\Client;
-use QueryAuth\Factory;
-use QueryAuth\ParameterCollection;
-use QueryAuth\Server;
-use QueryAuth\Signer;
 use QueryAuth\Signer\SignatureSigner;
 
 class ServerTest extends \PHPUnit_Framework_TestCase

@@ -1,9 +1,6 @@
 <?php
 
-namespace QueryAuth\Tests;
-
-use QueryAuth\Signer;
-use QueryAuth\ParameterCollection;
+namespace QueryAuth;
 
 class SignerTest extends \PHPUnit_Framework_TestCase
 {

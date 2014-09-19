@@ -1,12 +1,7 @@
 <?php
 
-namespace QueryAuthTests;
+namespace QueryAuth;
 
-use QueryAuth\Client;
-use QueryAuth\Factory;
-use QueryAuth\KeyGenerator;
-use QueryAuth\ParameterCollection;
-use QueryAuth\Signer;
 use QueryAuth\Signer\SignatureSigner;
 use RandomLib\Factory as RandomFactory;
 

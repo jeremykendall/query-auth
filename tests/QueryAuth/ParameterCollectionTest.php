@@ -1,8 +1,6 @@
 <?php
 
-namespace QueryAuth\Tests;
-
-use QueryAuth\ParameterCollection;
+namespace QueryAuth;
 
 class ParameterCollectionTest extends \PHPUnit_Framework_TestCase
 {
@@ -21,7 +19,7 @@ class ParameterCollectionTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expected, $actual);
     }
-    
+
     public function testNormalizeMultiValues()
     {
         $collection = new ParameterCollection(

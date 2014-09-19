@@ -1,10 +1,6 @@
 <?php
 
-namespace QueryAuth\Tests;
-
-use QueryAuth\KeyGenerator;
-use QueryAuth\Factory;
-use RandomLib\Factory as RandomFactory;
+namespace QueryAuth;
 
 class KeyGeneratorTest extends \PHPUnit_Framework_TestCase
 {
@@ -30,7 +26,7 @@ class KeyGeneratorTest extends \PHPUnit_Framework_TestCase
         $secret = $this->keyGenerator->generateSecret();
         $this->assertRegexp('/^[0-9A-Za-z\/\.]{60}$/', $secret);
     }
-    
+
     public function testGenerateNonce()
     {
         $secret = $this->keyGenerator->generateNonce();

@@ -1,8 +1,6 @@
 <?php
 
-namespace QueryAuthTests\Credentials;
-
-use QueryAuth\Credentials\Credentials;
+namespace QueryAuth\Credentials;
 
 class CredentialsTest extends \PHPUnit_Framework_TestCase
 {
@@ -14,7 +12,7 @@ class CredentialsTest extends \PHPUnit_Framework_TestCase
         $credentials = new Credentials($key, $secret);
 
         $this->assertInstanceOf(
-            'QueryAuth\Credentials\CredentialsInterface', 
+            'QueryAuth\Credentials\CredentialsInterface',
             $credentials
         );
         $this->assertEquals($key, $credentials->getKey());
