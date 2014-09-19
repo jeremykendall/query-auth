@@ -9,13 +9,19 @@
             "role": "Developer"
         }
     ],
-    "keywords": ["REST", "authentication", "query authentication", "signature", "API"],
+    "keywords": [
+        "REST",
+        "authentication",
+        "query authentication",
+        "signature",
+        "API"
+    ],
     "require": {
         "php": ">=5.4",
         "ircmaxell/random-lib": "v1.0.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "3.7.*"
+        "phpunit/phpunit": "4.*"
     },
     "autoload": {
         "psr-0": {
