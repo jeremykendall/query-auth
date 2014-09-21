@@ -9,7 +9,6 @@
 
 namespace QueryAuth;
 
-use QueryAuth\ParameterCollection;
 use QueryAuth\Signer\SignatureSigner;
 
 /**
@@ -17,21 +16,6 @@ use QueryAuth\Signer\SignatureSigner;
  */
 class Signer implements SignatureSigner
 {
-    /**
-     * @var ParameterCollection Request parameter collection
-     */
-    private $collection;
-
-    /**
-     * Public constructor
-     *
-     * @param ParameterCollection $collection Parameter collection
-     */
-    public function __construct(ParameterCollection $collection)
-    {
-        $this->collection = $collection;
-    }
-
     /**
      * Creates signature
      *
@@ -44,13 +28,37 @@ class Signer implements SignatureSigner
      */
     public function createSignature($method, $host, $path, $secret, array $params)
     {
-        $this->collection->setFromArray($params);
-
         $data = $method . "\n"
             . $host . "\n"
             . $path . "\n"
-            . $this->collection->normalize();
+            . $this->normalize($params);
 
         return \base64_encode(\hash_hmac('sha256', $data, $secret, true));
+    }
+
+    /**
+     * Normalizes request parameters
+     *
+     * @return string Normalized, rawurlencoded parameter string
+     */
+    public function normalize(array $params)
+    {
+        uksort($params, 'strcmp');
+
+        $signature = null;
+
+        // Do not encode signature
+        if (isset($params['signature'])) {
+            $signature = $params['signature'];
+            unset($params['signature']);
+        }
+
+        $query = http_build_query($params, null, '&', PHP_QUERY_RFC3986);
+
+        if ($signature !== null) {
+            $params['signature'] = $signature;
+        }
+
+        return $query;
     }
 }

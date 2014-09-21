@@ -36,7 +36,7 @@ class SignerTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->signer = new Signer(new ParameterCollection());
+        $this->signer = new Signer();
         $this->secret = base64_encode(time() . 'secret');
         $this->host = 'www.example.com';
         $this->path = '/resources';

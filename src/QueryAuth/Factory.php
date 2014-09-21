@@ -10,7 +10,6 @@
 namespace QueryAuth;
 
 use QueryAuth\Client;
-use QueryAuth\ParameterCollection;
 use QueryAuth\Server;
 use QueryAuth\Signer;
 use RandomLib\Factory as RandomFactory;
@@ -62,7 +61,7 @@ class Factory
      */
     protected function newSigner()
     {
-        return new Signer(new ParameterCollection());
+        return new Signer();
     }
 
     /**
