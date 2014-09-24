@@ -10,7 +10,7 @@
 namespace QueryAuth\Credentials;
 
 /**
- * Stores request key and secret
+ * Stores key and secret
  */
 class Credentials implements CredentialsInterface
 {
