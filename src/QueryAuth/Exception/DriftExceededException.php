@@ -12,6 +12,6 @@ namespace QueryAuth\Exception;
 /**
  * Thrown when request timestamp is beyond allowable clock drift
  */
-class TimeOutOfBoundsException extends \OutOfBoundsException implements QueryAuthException
+class DriftExceededException extends \OutOfBoundsException implements QueryAuthException
 {
 }
