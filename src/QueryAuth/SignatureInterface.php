@@ -7,23 +7,22 @@
  * @link https://github.com/jeremykendall/query-auth
  */
 
-namespace QueryAuth\Signer;
+namespace QueryAuth;
+
+use QueryAuth\Credentials\CredentialsInterface;
 
 /**
  * Interface for dealing with signature creation
  *
  */
-interface SignatureSigner
+interface SignatureInterface
 {
     /**
      * Creates signature
      *
-     * @param  string $method HTTP method
-     * @param  string $host   Host where request is being sent
-     * @param  string $path   Request path
-     * @param  string $secret API secret
-     * @param  array  $params Request params (querystring, post body, etc)
-     * @return string Base64 encoded signature
+     * @param  RequestInterface     $request     Request
+     * @param  CredentialsInterface $credentials Credentials
+     * @return string               Base64 encoded signature
      */
-    public function createSignature($method, $host, $path, $secret, array $params);
+    public function createSignature(RequestInterface $request, CredentialsInterface $credentials);
 }

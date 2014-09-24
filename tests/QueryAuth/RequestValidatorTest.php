@@ -2,78 +2,67 @@
 
 namespace QueryAuth;
 
-use QueryAuth\Signer\SignatureSigner;
+use QueryAuth\Credentials\Credentials;
 
-class ServerTest extends \PHPUnit_Framework_TestCase
+class RequestValidatorTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Server
+     * @var RequestValidator
      */
-    private $server;
+    private $requestValidator;
 
     /**
-     * @var Client
+     * @var CredentialsInterface
      */
-    private $client;
+    private $credentials;
 
     /**
-     * @var string
+     * @var RequestInterface
      */
-    private $key;
+    private $request;
 
     /**
-     * @var string
+     * @var SignatureInterface
      */
-    private $secret;
-
-    /**
-     * @var string
-     */
-    private $host;
-
-    /**
-     * @var string
-     */
-    private $path;
+    private $signature;
 
     protected function setUp()
     {
-        $factory = new Factory();
-        $this->server = $factory->newServer();
-        $this->client = $factory->newClient();
-        $this->key = md5(time());
-        $this->secret = base64_encode(time() . 'secret');
-        $this->host = 'www.example.com';
-        $this->path = '/resources';
+        $key = md5(time());
+        $secret = base64_encode(time() . 'secret');
+
+        $this->credentials = new Credentials($key, $secret);
+        $this->request = $this->getMockBuilder('QueryAuth\RequestInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->signature = $this->getMockBuilder('QueryAuth\SignatureInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+        
+        $this->requestValidator = new RequestValidator($this->signature);
     }
 
     protected function tearDown()
     {
-        $this->server = null;
-        $this->client = null;
+        $this->requestValidator = null;
     }
 
-    public function testValidateSignatureGetRequest()
+    public function testValidateSignature()
     {
-        $signedParams = $this->client->getSignedRequestParams(
-            $this->key, $this->secret, 'GET', $this->host, $this->path, $params = array()
-        );
+        $this->request->expects($this->once())
+            ->method('getParams')
+            ->willReturn([
+                'signature' => 12345,
+                'timestamp' => (int) gmdate('U'),
+            ]);
 
-        $result = $this->server->validateSignature(
-            $this->secret, 'GET', $this->host, $this->path, $signedParams
-        );
+        $this->signature->expects($this->once())
+            ->method('createSignature')
+            ->with($this->request, $this->credentials)
+            ->willReturn(12345);
 
-        $this->assertTrue($result);
-    }
-
-    public function testValidateSignaturePostRequest()
-    {
-        $signedParams = $this->client->getSignedRequestParams(
-            $this->key, $this->secret, 'POST', $this->host, $this->path, $params = array('foo' => 'bar', 'baz' => 'bat')
-        );
-
-        $result = $this->server->validateSignature(
-            $this->secret, 'POST', $this->host, $this->path, $signedParams
+        $result = $this->requestValidator->validateSignature(
+            $this->request, $this->credentials
         );
 
         $this->assertTrue($result);
@@ -81,14 +70,20 @@ class ServerTest extends \PHPUnit_Framework_TestCase
 
     public function testValidateSignatureReturnsFalseForInvalidSignature()
     {
-        $signedParams = $this->client->getSignedRequestParams(
-            $this->key, $this->secret, 'GET', $this->host, $this->path, $params = array()
-        );
+        $this->request->expects($this->once())
+            ->method('getParams')
+            ->willReturn([
+                'signature' => 12345,
+                'timestamp' => (int) gmdate('U'),
+            ]);
 
-        $signedParams['signature'] = 'WAT';
+        $this->signature->expects($this->once())
+            ->method('createSignature')
+            ->with($this->request, $this->credentials)
+            ->willReturn(54321);
 
-        $result = $this->server->validateSignature(
-            $this->secret, 'GET', $this->host, $this->path, $signedParams
+        $result = $this->requestValidator->validateSignature(
+            $this->request, $this->credentials
         );
 
         $this->assertFalse($result);
@@ -97,42 +92,54 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     public function testExceedsMaximumDriftThrowsException()
     {
         $this->setExpectedException(
-            'QueryAuth\Exception\TimeOutOfBoundsException',
+            'QueryAuth\Exception\DriftExceededException',
             sprintf(
                 'Timestamp is beyond the +-%d second difference allowed.',
-                $this->server->getDrift()
+                $this->requestValidator->getDrift()
             )
         );
 
-        $signedParams = $this->client->getSignedRequestParams(
-            $this->key, $this->secret, 'GET', $this->host, $this->path, $params = array()
-        );
+        $badTimestamp = $this->requestValidator->getDrift() + 10;
 
-        $signedParams['timestamp'] = $signedParams['timestamp'] + ($this->server->getDrift() + 10);
+        $this->request->expects($this->once())
+            ->method('getParams')
+            ->willReturn([
+                'signature' => 12345,
+                'timestamp' => (int) gmdate('U') + $badTimestamp,
+            ]);
 
-        $this->server->validateSignature(
-            $this->secret, 'GET', $this->host, $this->path, $signedParams
+        $this->signature->expects($this->never())
+            ->method('createSignature');
+
+        $this->requestValidator->validateSignature(
+            $this->request, $this->credentials
         );
     }
 
     public function testExceedsMinimumDriftThrowsException()
     {
         $this->setExpectedException(
-            'QueryAuth\Exception\TimeOutOfBoundsException',
+            'QueryAuth\Exception\DriftExceededException',
             sprintf(
                 'Timestamp is beyond the +-%d second difference allowed.',
-                $this->server->getDrift()
+                $this->requestValidator->getDrift()
             )
         );
 
-        $signedParams = $this->client->getSignedRequestParams(
-            $this->key, $this->secret, 'GET', $this->host, $this->path, $params = array()
-        );
+        $badTimestamp = $this->requestValidator->getDrift() + 10;
 
-        $signedParams['timestamp'] = $signedParams['timestamp'] - ($this->server->getDrift() + 10);
+        $this->request->expects($this->once())
+            ->method('getParams')
+            ->willReturn([
+                'signature' => 12345,
+                'timestamp' => (int) gmdate('U') - $badTimestamp,
+            ]);
 
-        $this->server->validateSignature(
-            $this->secret, 'GET', $this->host, $this->path, $signedParams
+        $this->signature->expects($this->never())
+            ->method('createSignature');
+
+        $this->requestValidator->validateSignature(
+            $this->request, $this->credentials
         );
     }
 
@@ -143,31 +150,49 @@ class ServerTest extends \PHPUnit_Framework_TestCase
             'Request must contain a signature.'
         );
 
-        $signedParams = $this->client->getSignedRequestParams(
-            $this->key, $this->secret, 'GET', $this->host, $this->path, $params = array()
-        );
+        $this->request->expects($this->once())
+            ->method('getParams')
+            ->willReturn([
+                'timestamp' => (int) gmdate('U'),
+            ]);
 
-        unset($signedParams['signature']);
-
-        $this->server->validateSignature(
-            $this->secret, 'GET', $this->host, $this->path, $signedParams
+        $this->requestValidator->validateSignature(
+            $this->request, $this->credentials
         );
     }
 
+    public function testMissingTimestampThrowsException()
+    {
+        $this->setExpectedException(
+            'QueryAuth\Exception\TimestampMissingException',
+            'Request must contain a timestamp.'
+        );
+
+        $this->request->expects($this->once())
+            ->method('getParams')
+            ->willReturn([
+                'signature' => 12345,
+            ]);
+
+        $this->requestValidator->validateSignature(
+            $this->request, $this->credentials
+        );
+    }
+    
     public function testGetSetDrift()
     {
         // Test default value
-        $this->assertEquals(15, $this->server->getDrift());
+        $this->assertEquals(15, $this->requestValidator->getDrift());
 
-        $this->server->setDrift(30);
-        $this->assertEquals(30, $this->server->getDrift());
+        $this->requestValidator->setDrift(30);
+        $this->assertEquals(30, $this->requestValidator->getDrift());
     }
 
-    public function testGetSetSigner()
+    public function testGetSetSignature()
     {
-        $this->assertInstanceOf('QueryAuth\Signer\SignatureSigner', $this->server->getSigner());
-        $signature = new Signer(new ParameterCollection());
-        $this->server->setSigner($signature);
-        $this->assertSame($signature, $this->server->getSigner());
+        $this->assertInstanceOf('QueryAuth\SignatureInterface', $this->requestValidator->getSignature());
+        $signature = new Signature();
+        $this->requestValidator->setSignature($signature);
+        $this->assertSame($signature, $this->requestValidator->getSignature());
     }
 }

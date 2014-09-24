@@ -2,12 +2,12 @@
 
 namespace QueryAuth;
 
-class SignerTest extends \PHPUnit_Framework_TestCase
+class SignatureTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Signer
+     * @var Signature
      */
-    private $signer;
+    private $signature;
 
     /**
      * @var string
@@ -34,9 +34,21 @@ class SignerTest extends \PHPUnit_Framework_TestCase
      */
     private $base64Pattern;
 
+    private $request;
+
+    private $credentials;
+
     protected function setUp()
     {
-        $this->signer = new Signer();
+        $this->request = $this->getMockBuilder('QueryAuth\RequestInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->credentials = $this->getMockBuilder('QueryAuth\Credentials\CredentialsInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->signature = new Signature();
         $this->secret = base64_encode(time() . 'secret');
         $this->host = 'www.example.com';
         $this->path = '/resources';
@@ -47,18 +59,27 @@ class SignerTest extends \PHPUnit_Framework_TestCase
 
     protected function tearDown()
     {
-        $this->signer = null;
+        $this->signature = null;
     }
 
     public function testCreateSignatureForGET()
     {
-        $signature = $this->signer->createSignature(
-            'GET',
-            $this->host,
-            $this->path,
-            $this->secret,
-            $this->params
-        );
+        $this->request->method('getMethod')
+            ->willReturn('GET');
+
+        $this->request->method('getHost')
+            ->willReturn($this->host);
+
+        $this->request->method('getPath')
+            ->willReturn($this->path);
+
+        $this->request->method('getParams')
+            ->willReturn($this->params);
+
+        $this->credentials->method('getSecret')
+            ->willReturn($this->secret);
+
+        $signature = $this->signature->createSignature($this->request, $this->credentials);
 
         $this->assertNotNull($signature);
         $this->assertRegexp($this->base64Pattern, $signature);
@@ -67,13 +88,23 @@ class SignerTest extends \PHPUnit_Framework_TestCase
     public function testCreateSignatureForPOST()
     {
         $this->params['user'] = 'arthur.dent@example.net';
-        $signature = $this->signer->createSignature(
-            'POST',
-            $this->host,
-            $this->path,
-            $this->secret,
-            $this->params
-        );
+
+        $this->request->method('getMethod')
+            ->willReturn('POST');
+
+        $this->request->method('getHost')
+            ->willReturn($this->host);
+
+        $this->request->method('getPath')
+            ->willReturn($this->path);
+
+        $this->request->method('getParams')
+            ->willReturn($this->params);
+
+        $this->credentials->method('getSecret')
+            ->willReturn($this->secret);
+
+        $signature = $this->signature->createSignature($this->request, $this->credentials);
 
         $this->assertNotNull($signature);
         $this->assertRegexp($this->base64Pattern, $signature);
@@ -83,21 +114,53 @@ class SignerTest extends \PHPUnit_Framework_TestCase
     {
         $this->params['user'] = 'zaphod.beeblebrox@example.net';
 
-        $signature1 = $this->signer->createSignature(
-            'POST',
-            $this->host,
-            $this->path,
-            $this->secret,
-            $this->params
-        );
+        $this->request->method('getMethod')
+            ->willReturn('POST');
 
-        $signature2 = $this->signer->createSignature(
-            'POST',
-            $this->host,
-            $this->path,
-            $this->secret,
-            $this->params
-        );
+        $this->request->method('getHost')
+            ->willReturn($this->host);
+
+        $this->request->method('getPath')
+            ->willReturn($this->path);
+
+        $this->request->method('getParams')
+            ->willReturn($this->params);
+
+        $this->credentials->method('getSecret')
+            ->willReturn($this->secret);
+
+        $signature1 = $this->signature->createSignature($this->request, $this->credentials);
+        $signature2 = $this->signature->createSignature($this->request, $this->credentials);
+
+        $this->assertEquals($signature1, $signature2);
+    }
+
+    public function testSignaturesUnsetIfPresentAndSignaturesMatch()
+    {
+        $this->params['user'] = 'zaphod.beeblebrox@example.net';
+
+        $this->request->method('getMethod')
+            ->willReturn('POST');
+
+        $this->request->method('getHost')
+            ->willReturn($this->host);
+
+        $this->request->method('getPath')
+            ->willReturn($this->path);
+
+        $this->request->expects($this->at(3))
+            ->method('getParams')
+            ->willReturn($this->params);
+
+        $this->request->expects($this->at(7))
+            ->method('getParams')
+            ->willReturn(array_merge($this->params, ['signature' => 'fjdklsjflkd']));
+
+        $this->credentials->method('getSecret')
+            ->willReturn($this->secret);
+
+        $signature1 = $this->signature->createSignature($this->request, $this->credentials);
+        $signature2 = $this->signature->createSignature($this->request, $this->credentials);
 
         $this->assertEquals($signature1, $signature2);
     }

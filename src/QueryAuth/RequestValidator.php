@@ -9,14 +9,15 @@
 
 namespace QueryAuth;
 
-use QueryAuth\Exception\TimeOutOfBoundsException;
+use QueryAuth\Credentials\CredentialsInterface;
+use QueryAuth\Exception\DriftExceededException;
 use QueryAuth\Exception\SignatureMissingException;
-use QueryAuth\Signer\SignatureSigner;
+use QueryAuth\Exception\TimestampMissingException;
 
 /**
- * Validates signatures
+ * Validates requests
  */
-class Server
+class RequestValidator
 {
     /**
      * @var int Permissible drift, in seconds
@@ -24,56 +25,42 @@ class Server
     private $drift = 15;
 
     /**
-     * @var Signer Instance of the signature creation class
+     * @var Signature Instance of the signature creation class
      */
-    private $signer;
+    private $signature;
 
     /**
      * Public constructor
      *
-     * @param Signer $signer Instance of the signature creation class
+     * @param Signature $signature Instance of the signature creation interface
      */
-    public function __construct(SignatureSigner $signer)
+    public function __construct(SignatureInterface $signature)
     {
-        $this->signer = $signer;
+        $this->signature = $signature;
     }
 
     /**
      * Is signature valid?
      *
-     * @param  string                    $secret API secret
-     * @param  string                    $method Request method (GET, POST, PUT, HEAD, etc)
-     * @param  string                    $host   Host portion of API resource URL (including subdomain, excluding scheme)
-     * @param  string                    $path   Path portion of API resource URL (excluding query and fragment)
-     * @param  array                     $params Request params
-     * @throws TimeOutOfBoundsException  If timestamp greater than or less than allowable drift
+     * @param  RequestInterface          $request     Request
+     * @param  CredentialsInterface      $credentials Credentials
+     * @throws DriftExceededException    If timestamp greater than or less than allowable drift
      * @throws SignatureMissingException If signature is missing from request
+     * @throws TimestampMissingException If timestamp is missing from request
      * @return boolean
      */
-    public function validateSignature($secret, $method, $host, $path, array $params)
+    public function validateSignature(
+        RequestInterface $request,
+        CredentialsInterface $credentials
+    )
     {
-        if (!isset($params['signature'])) {
-            throw new SignatureMissingException('Request must contain a signature.');
-        }
+        $params = $request->getParams();
 
-        $currentTimestamp = (int) gmdate('U');
+        $this->isSignaturePresent($params);
+        $this->isTimestampPresent($params);
+        $this->isDriftExceeded($params);
 
-        if ($this->timeOutOfBounds($currentTimestamp, $params['timestamp'])) {
-            throw new TimeOutOfBoundsException(
-                sprintf('Timestamp is beyond the +-%d second difference allowed.', $this->getDrift())
-            );
-        }
-
-        $validSignature = $this->signer->createSignature(
-            $method,
-            $host,
-            $path,
-            $secret,
-            $params
-        );
-
-        // By @RobertGonzalez from PR #5
-        return $params['signature'] === $validSignature;
+        return $params['signature'] === $this->signature->createSignature($request, $credentials);
     }
 
     /**
@@ -83,13 +70,32 @@ class Server
      * @param  int     $timestamp GMT timestamp from request
      * @return boolean
      */
-    protected function timeOutOfBounds($now, $timestamp)
+    protected function isDriftExceeded(array $params)
     {
-        if (abs($timestamp - $now) > $this->drift) {
-            return true;
-        }
+        $now = (int) gmdate('U');
 
-        return false;
+        if (abs($params['timestamp'] - $now) > $this->drift) {
+            throw new DriftExceededException(
+                sprintf(
+                    'Timestamp is beyond the +-%d second difference allowed.',
+                    $this->getDrift()
+                )
+            );
+        }
+    }
+
+    protected function isSignaturePresent(array $params)
+    {
+        if (!isset($params['signature'])) {
+            throw new SignatureMissingException('Request must contain a signature.');
+        }
+    }
+
+    protected function isTimestampPresent(array $params)
+    {
+        if (!isset($params['timestamp'])) {
+            throw new TimestampMissingException('Request must contain a timestamp.');
+        }
     }
 
     /**
@@ -113,22 +119,22 @@ class Server
     }
 
     /**
-     * Get Signer
+     * Get Signature
      *
-     * @return Signer Instance of the signature creation class
+     * @return Signature Instance of the signature creation class
      */
-    public function getSigner()
+    public function getSignature()
     {
-        return $this->signer;
+        return $this->signature;
     }
 
     /**
-     * Set Signer
+     * Set Signature
      *
-     * @param Signer $signer Instance of the signature creation class
+     * @param Signature $signature Instance of the signature creation class
      */
-    public function setSigner(SignatureSigner $signer)
+    public function setSignature(SignatureInterface $signature)
     {
-        $this->signer = $signer;
+        $this->signature = $signature;
     }
 }

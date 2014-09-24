@@ -9,56 +9,50 @@
 
 namespace QueryAuth;
 
-use QueryAuth\Signer\SignatureSigner;
+use QueryAuth\Credentials\CredentialsInterface;
 
 /**
  * Creates signature
  */
-class Signer implements SignatureSigner
+class Signature implements SignatureInterface
 {
     /**
      * Creates signature
      *
-     * @param  string $method HTTP method
-     * @param  string $host   Host where request is being sent
-     * @param  string $path   Request path
-     * @param  string $secret API secret
-     * @param  array  $params Request params (querystring, post body, etc)
-     * @return string Base64 encoded signature
+     * {@inheritDoc}
      */
-    public function createSignature($method, $host, $path, $secret, array $params)
+    public function createSignature(RequestInterface $request, CredentialsInterface $credentials)
     {
-        $data = $method . "\n"
-            . $host . "\n"
-            . $path . "\n"
-            . $this->normalize($params);
+        $data = $request->getMethod() . "\n"
+            . $request->getHost() . "\n"
+            . $this->getAbsolutePath($request->getPath()) . "\n"
+            . $this->normalizeParameters($request->getParams());
 
-        return \base64_encode(\hash_hmac('sha256', $data, $secret, true));
+        return \base64_encode(
+            \hash_hmac('sha256', $data, $credentials->getSecret(), true)
+        );
     }
 
     /**
      * Normalizes request parameters
      *
+     * @params array $params Request parameters
      * @return string Normalized, rawurlencoded parameter string
      */
-    public function normalize(array $params)
+    protected function normalizeParameters(array $params)
     {
-        uksort($params, 'strcmp');
-
-        $signature = null;
-
         // Do not encode signature
         if (isset($params['signature'])) {
-            $signature = $params['signature'];
             unset($params['signature']);
         }
 
-        $query = http_build_query($params, null, '&', PHP_QUERY_RFC3986);
+        uksort($params, 'strcmp');
 
-        if ($signature !== null) {
-            $params['signature'] = $signature;
-        }
+        return http_build_query($params, null, '&', PHP_QUERY_RFC3986);
+    }
 
-        return $query;
+    protected function getAbsolutePath($path)
+    {
+        return '/' . ltrim($path, '/');
     }
 }

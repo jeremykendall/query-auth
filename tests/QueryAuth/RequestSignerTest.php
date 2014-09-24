@@ -2,134 +2,86 @@
 
 namespace QueryAuth;
 
-use QueryAuth\Signer\SignatureSigner;
+use QueryAuth\Credentials\Credentials;
 use RandomLib\Factory as RandomFactory;
 
-class ClientTest extends \PHPUnit_Framework_TestCase
+class RequestSignerTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var Client
-     */
-    private $client;
-
-    /**
-     * @var string
-     */
-    private $key;
-
-    /**
-     * @var string
-     */
-    private $secret;
-
-    /**
-     * @var string
-     */
-    private $host;
-
-    /**
-     * @var string
-     */
-    private $path;
-
     protected function setUp()
     {
-        $factory = new Factory();
-        $this->client = $factory->newClient();
-        $this->key = md5(time());
-        $this->secret = base64_encode(time() . 'secret');
-        $this->host = 'www.example.com';
-        $this->path = '/resources';
+        $key = md5(time());
+        $secret = base64_encode(time() . 'secret');
+
+        $this->credentials = new Credentials($key, $secret);
+        $this->request = $this->getMockBuilder('QueryAuth\RequestInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->signature = $this->getMockBuilder('QueryAuth\SignatureInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->keyGenerator = $this->getMockBuilder('QueryAuth\KeyGenerator')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->requestSigner = new RequestSigner($this->signature, $this->keyGenerator);
     }
 
     protected function tearDown()
     {
-        $this->client = null;
+        $this->requestSigner = null;
     }
 
-    public function testGetSignedRequestParamsForGetRequestWithoutParams()
+    public function testSignRequest()
     {
-        $result = $this->client->getSignedRequestParams(
-            $this->key, $this->secret, 'GET', $this->host, $this->path, $params = array()
-        );
+        $signature = 'fjkdlajflkdjkasdljflasd';
+        $cnonce = 'ahssgajsgajgusibanriuuei';
 
-        $this->assertInternalType('array', $result);
-        $this->assertNotEmpty($result);
-        $this->assertArrayHasKey('timestamp', $result);
-        $this->assertArrayHasKey('cnonce', $result);
-        $this->assertArrayHasKey('key', $result);
-        $this->assertArrayHasKey('signature', $result);
-        $this->assertEquals(4, count($result));
+        $this->keyGenerator->expects($this->once())
+            ->method('generateNonce')
+            ->willReturn($cnonce);
+
+        $this->signature->expects($this->once())
+            ->method('createSignature')
+            ->with($this->request, $this->credentials)
+            ->willReturn($signature);
+
+        $this->request->expects($this->exactly(4))
+            ->method('addParam')
+            ->withConsecutive(
+                ['key', $this->credentials->getKey()],
+                ['timestamp', $this->requestSigner->getTimestamp()],
+                ['cnonce', $cnonce],
+                ['signature', $signature]
+            );
+
+        $this->requestSigner->signRequest($this->request, $this->credentials);
     }
 
-    public function testGetSignedRequestParamsForPostRequestWithParams()
+    public function testGetSetSignature()
     {
-        $result = $this->client->getSignedRequestParams(
-            $this->key,
-            $this->secret,
-            'POST',
-            $this->host,
-            $this->path,
-            $params = array('foo' => 'bar', 'baz' => 'bat')
-        );
-
-        $this->assertInternalType('array', $result);
-        $this->assertNotEmpty($result);
-        $this->assertArrayHasKey('foo', $result);
-        $this->assertArrayHasKey('baz', $result);
-        $this->assertEquals(6, count($result));
-    }
-
-    public function testSignaturesWithSameDataAndTimestampAreUnique()
-    {
-        $this->client->setTimestamp(gmdate('U'));
-
-        $result1 = $this->client->getSignedRequestParams(
-            $this->key,
-            $this->secret,
-            'POST',
-            $this->host,
-            $this->path,
-            $params = array('foo' => 'bar', 'baz' => 'bat')
-        );
-
-        $result2 = $this->client->getSignedRequestParams(
-            $this->key,
-            $this->secret,
-            'POST',
-            $this->host,
-            $this->path,
-            $params = array('foo' => 'bar', 'baz' => 'bat')
-        );
-
-        $this->assertNotEquals($result1, $result2);
-    }
-
-    public function testGetSetSigner()
-    {
-        $this->assertInstanceOf('QueryAuth\Signer\SignatureSigner', $this->client->getSigner());
-        $signature = new Signer(new ParameterCollection());
-        $this->client->setSigner($signature);
-        $this->assertSame($signature, $this->client->getSigner());
+        $this->assertInstanceOf('QueryAuth\SignatureInterface', $this->requestSigner->getSignature());
+        $signature = new Signature(new ParameterCollection());
+        $this->requestSigner->setSignature($signature);
+        $this->assertSame($signature, $this->requestSigner->getSignature());
     }
 
     public function testGetSetKeyGenerator()
     {
-        $this->assertInstanceOf('QueryAuth\KeyGenerator', $this->client->getKeyGenerator());
+        $this->assertInstanceOf('QueryAuth\KeyGenerator', $this->requestSigner->getKeyGenerator());
         $randomFactory = new RandomFactory();
         $keyGenerator = new KeyGenerator($randomFactory->getMediumStrengthGenerator());
-        $this->client->setKeyGenerator($keyGenerator);
-        $this->assertSame($keyGenerator, $this->client->getKeyGenerator());
+        $this->requestSigner->setKeyGenerator($keyGenerator);
+        $this->assertSame($keyGenerator, $this->requestSigner->getKeyGenerator());
     }
 
     public function testGetSetTimestamp()
     {
-        $default = $this->client->getTimestamp();
+        $default = $this->requestSigner->getTimestamp();
         $this->assertLessThanOrEqual(gmdate('U'), $default);
         $this->assertNotNull($default);
         $this->assertInternalType('int', $default);
         $new = gmdate('U');
-        $this->client->setTimestamp($new);
-        $this->assertEquals($new, $this->client->getTimestamp());
+        $this->requestSigner->setTimestamp($new);
+        $this->assertEquals($new, $this->requestSigner->getTimestamp());
     }
 }

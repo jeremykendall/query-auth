@@ -9,18 +9,17 @@
 
 namespace QueryAuth;
 
-use QueryAuth\KeyGenerator;
-use QueryAuth\Signer\SignatureSigner;
+use QueryAuth\Credentials\CredentialsInterface;
 
 /**
  * Signs requests
  */
-class Client
+class RequestSigner
 {
     /**
-     * @var Signer Instance of SignatureSigner
+     * @var Signature Instance of SignatureInterface
      */
-    private $signer;
+    private $signature;
 
     /**
      * @var KeyGenerator Instance of KeyGenerator
@@ -35,56 +34,54 @@ class Client
     /**
      * Public constructor
      *
-     * @param Signer $signer Instance of singature creation class
+     * @param SignatureInterface $signature    SingatureInterface
+     * @param KeyGenerator       $keyGenerator Key generator
      */
-    public function __construct(SignatureSigner $signer, KeyGenerator $keyGenerator)
+    public function __construct(SignatureInterface $signature, KeyGenerator $keyGenerator)
     {
-        $this->signer = $signer;
+        $this->signature = $signature;
         $this->keyGenerator = $keyGenerator;
     }
 
     /**
-     * Sign request params
+     * Sign request
      *
-     * @param  string $key    API key
-     * @param  string $secret API secret
-     * @param  string $method Request method (GET, POST, PUT, HEAD, etc)
-     * @param  string $host   Host portion of API resource URL (including subdomain, excluding scheme)
-     * @param  string $path   Path portion of API resource URL (excluding query and fragment)
-     * @param  array  $params OPTIONAL Request params (query or POST fields), only needed if required by endpoint
-     * @return array  Request params provided PLUS key, timestamp, and signature
+     * @param  RequestInterface     $request     Request
+     * @param  CredentialsInterface $credentials Credentials
+     * @return void
      */
-    public function getSignedRequestParams($key, $secret, $method, $host, $path, array $params = [])
+    public function signRequest(
+        RequestInterface $request,
+        CredentialsInterface $credentials
+    )
     {
-        $params['key'] = $key;
-        $params['timestamp'] = $this->getTimestamp();
-        $params['cnonce'] = $this->keyGenerator->generateNonce();
-        // Ensure path is absolute
-        $path = '/' . ltrim($path, '/');
-        $signature = $this->signer->createSignature($method, $host, $path, $secret, $params);
-        $params['signature'] = $signature;
+        $request->addParam('key', $credentials->getKey());
+        $request->addParam('timestamp', $this->getTimestamp());
+        $request->addParam('cnonce', $this->keyGenerator->generateNonce());
 
-        return $params;
+        $signature = $this->signature->createSignature($request, $credentials);
+
+        $request->addParam('signature', $signature);
     }
 
     /**
-     * Get Signer
+     * Get Signature
      *
-     * @return Signer Instance of the signature creation class
+     * @return Signature Instance of the signature creation class
      */
-    public function getSigner()
+    public function getSignature()
     {
-        return $this->signer;
+        return $this->signature;
     }
 
     /**
-     * Set Signer
+     * Set Signature
      *
-     * @param Signer $signer Instance of the signature creation class
+     * @param Signature $signature Instance of the signature creation class
      */
-    public function setSigner(SignatureSigner $signer)
+    public function setSignature(SignatureInterface $signature)
     {
-        $this->signer = $signer;
+        $this->signature = $signature;
     }
 
     /**
