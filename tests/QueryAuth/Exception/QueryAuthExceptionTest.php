@@ -4,6 +4,13 @@ namespace QueryAuth\Exception;
 
 class QueryAuthExceptionTest extends \PHPUnit_Framework_TestCase
 {
+    public function testDriftExceededException()
+    {
+        $e = new DriftExceededException();
+        $this->assertInstanceOf('QueryAuth\Exception\DriftExceededException', $e);
+        $this->assertInstanceOf('QueryAuth\Exception\QueryAuthException', $e);
+    }
+
     public function testSignatureMissingException()
     {
         $e = new SignatureMissingException();
@@ -11,10 +18,10 @@ class QueryAuthExceptionTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('QueryAuth\Exception\QueryAuthException', $e);
     }
 
-    public function testTimeOutOfBoundsException()
+    public function testTimestampMissingException()
     {
-        $e = new TimeOutOfBoundsException();
-        $this->assertInstanceOf('QueryAuth\Exception\TimeOutOfBoundsException', $e);
+        $e = new TimestampMissingException();
+        $this->assertInstanceOf('QueryAuth\Exception\TimestampMissingException', $e);
         $this->assertInstanceOf('QueryAuth\Exception\QueryAuthException', $e);
     }
 }

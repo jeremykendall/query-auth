@@ -9,9 +9,9 @@
 
 namespace QueryAuth;
 
-use QueryAuth\Client;
-use QueryAuth\Server;
-use QueryAuth\Signer;
+use QueryAuth\RequestSigner;
+use QueryAuth\RequestValidator;
+use QueryAuth\Signature;
 use RandomLib\Factory as RandomFactory;
 
 /**
@@ -27,21 +27,21 @@ class Factory
     /**
      * Creates a client instance
      *
-     * @return Client Client instance
+     * @return RequestSigner RequestSigner instance
      */
-    public function newClient()
+    public function newRequestSigner()
     {
-        return new Client($this->newSigner(), $this->newKeyGenerator());
+        return new RequestSigner($this->newSignature(), $this->newKeyGenerator());
     }
 
     /**
-     * Creates a server instance
+     * Creates a RequestValidator
      *
-     * @return Server Server instance
+     * @return RequestValidator RequestValidator instance
      */
-    public function newServer()
+    public function newRequestValidator()
     {
-        return new Server($this->newSigner());
+        return new RequestValidator($this->newSignature());
     }
 
     /**
@@ -55,13 +55,13 @@ class Factory
     }
 
     /**
-     * Creates a signer for either server or client
+     * Creates a Signature instance
      *
-     * @return Signer Signer instance
+     * @return Signature Signature instance
      */
-    protected function newSigner()
+    protected function newSignature()
     {
-        return new Signer();
+        return new Signature();
     }
 
     /**
