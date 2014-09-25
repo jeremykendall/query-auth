@@ -13,7 +13,6 @@
         "REST",
         "authentication",
         "query authentication",
-        "signature",
         "API"
     ],
     "require": {

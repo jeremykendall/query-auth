@@ -14,74 +14,95 @@ have to whip up both server-side signature validation and a client-side
 signature creation strategy. This library endeavors to handle both of those
 tasks; signature creation and signature validation.
 
-## Philosophy
-
-Query Auth is intended to be -- and is written as -- a bare bones library.  Many of
-niceties and abstractions you'd find in a fully featured API library or SDK are
-absent here.  The point of the library is to provide you with the ability to
-focus on writing your API in any way you see fit, without adding any additional
-dependencies to the mix, while allowing you to hand off the query authentication
-to this library.
-
-
 ## Sample Implementation
 
-I've provided a [sample implementation of the Query Auth library](https://github.com/jeremykendall/query-auth-impl) 
-in order to better demonstrate how one might employ the library, from both the
-API consumer and API creator perspectives.
+A [sample implementation of the Query Auth library](https://github.com/jeremykendall/query-auth-impl) is available in order to better demonstrate how one might employ the library.
 
 ## Usage
 
-There are three components to this library: Request signing for API consumers
-and creators, request signature validation for API creators, and API key and
-API secret generation.
+There are three components to this library: 
+
+* Request signing
+* Request validation
+* API key and secret generation
+
+Request signing and validation are made possible by the use of request adapters.
+
+### Request Adapters
+
+Query Auth request adapters wrap outgoing and incoming requests and adapt them to the 
+request interface that Query Auth expects.
+
+#### Outgoing
+
+Outgoing request adapters are used to facilitate request signing. There are
+currently two available in the `QueryAuth\Request\Adapter\Outgoing` namespace:
+
+* `GuzzleRequestAdapter` for use with Guzzle v3
+* `GuzzleHttpRequestAdapter` for use with Guzzle v4
+
+#### Incoming
+
+Incoming request adapters are used to facilitate request validation. There is
+currently one available in the `QueryAuth\Request\Adapter\Incoming` namespace:
+
+* `SlimRequestAdapter` for use with Slim PHP v2
+
+#### Custom
+
+If you would prefer to use an HTTP library other than Guzzle, or if you prefer
+to use an application framework other than Slim, you will need to write your own
+request adapter(s). Please refer to the existing request adapters for examples.
 
 ### Request Signing
 
 ``` php
-$factory = new QueryAuth\Factory();
-$client = $factory->newClient();
+use GuzzleHttp\Client as GuzzleHttpClient;
+use QueryAuth\Credentials\Credentials;
+use QueryAuth\Factory;
+use QueryAuth\Request\Adapter\Outgoing\GuzzleHttpRequestAdapter;
 
-$key = 'API_KEY';
-$secret = 'API_SECRET';
-$method = 'GET';
-$host = 'api.example.com';
-$path = '/resources';
-$params = array('type' => 'vehicles');
+$factory = new Factory();
+$requestSigner = $factory->newRequestSigner();
+$credentials = new Credentials('key', 'secret');
 
-$signedParameters = $client->getSignedRequestParams($key, $secret, $method, $host, $path, $params);
+// Create a GET request and set an endpoint
+$guzzle = new GuzzleHttpClient(['base_url' => 'http://api.example.com']);
+$request = $guzzle->createRequest('GET', '/endpoint');
+
+// Sign the request
+$requestSigner->signRequest(new GuzzleHttpRequestAdapter($request), $credentials);
+
+// Send signed request
+$response = $guzzle->send($request);
 ```
 
-`Client::getSignedRequestParams()` returns an array of parameters to send via
-the querystring (for `GET` requests) or the request body. The parameters are
-those provided to the method (if any), plus `timestamp`, `key`, and `signature`.
-
-### Signature Validation
+### Request Validation
 
 ``` php
-$factory = new QueryAuth\Factory();
-$server = $factory->newServer();
+use QueryAuth\Credentials\Credentials;
+use QueryAuth\Factory;
+use QueryAuth\Request\Adapter\Incoming\SlimRequestAdapter;
 
-$secret = 'API_SECRET_FROM_PERSISTENCE_LAYER';
-$method = 'GET';
-$host = 'api.example.com';
-$path = '/resources';
-// querystring params or request body as an array,
-// which includes timestamp, key, and signature params from the client's
-// getSignedRequestParams method
-$params = 'PARAMS_FROM_REQUEST'; 
+$factory = new Factory();
+$requestValidator = $factory->newRequestValidator();
+$credentials = new Credentials('key', 'secret');
 
-$isValid = $server->validateSignature($secret, $method, $host, $path, $params);
+// Get the Slim request (in the context of a Slim route, hook, or middleware)
+$request = $app->request;
+
+// $isValid is a boolean
+$isValid = $requestValidator->isValid(new SlimRequestAdapter($request), $credentials);
 ```
 
-`Server::validateSignature()` will return either true or false.  It might also
+`RequestValidator::isValid()` will return either true or false.  It might also
 throw one of three exceptions:
-* `MaximumDriftExceededException`: If timestamp is too far in the future
-* `MinimumDriftExceededException`: It timestamp is too far in the past
+* `DriftExceededException`: It timestamp is beyond +- `RequestValidator::$drift`
 * `SignatureMissingException`: If signature is missing from request params
+* `TimestampMissingException`: If timestamp is missing from request params
 
 Drift defaults to 15 seconds, meaning there is a 30 second window during which the
-request is valid. The default value can be modified using `Server::setDrift()`.
+request is valid. The default value can be modified using `RequestValidator::setDrift()`.
 
 ### Replay Attack Prevention
 
@@ -147,18 +168,18 @@ random string generator.
 Package installation is handled by Composer.
 
 * If you haven't already, please [install Composer](http://getcomposer.org/doc/00-intro.md#installation-nix)
-* Create `composer.json` in the root of your project:
+* Create `composer.json` in the root of your project and add query-auth as a dependency:
 
 ``` json
 {
     "require": {
-        "jeremykendall/query-auth": "dev-develop"
+        "jeremykendall/query-auth": "*"
     }
 }
 ```
 
 * Run `composer install`
-* Require Composer's `vendor/autoload` script in your bootstrap/init script
+* Require Composer's `vendor/autoload.php` script in your bootstrap/init script
 
 ## Feedback and Contributions
 
@@ -169,14 +190,12 @@ Package installation is handled by Composer.
 
 ## Credits
 
-* The Client, Signer, and ParameterCollection code are my own implementation of
-the [Signature Version 2
-implementation](https://github.com/aws/aws-sdk-php/blob/master/src/Aws/Common/Signature/SignatureV2.php)
-from the [AWS SDK for PHP
-2](https://github.com/aws/aws-sdk-php/blob/master/src/Aws/Common/Signature/SignatureV2.php).
-As such, a version of the Apache License Version 2.0 is included with this
-distribution, and the applicable portion of the AWS SDK for PHP 2 NOTICE file
-is included.
+* Query Auth is my own implementation of the [Signature Version 2
+  implementation](https://github.com/aws/aws-sdk-php/blob/master/src/Aws/Common/Signature/SignatureV2.php)
+  from the [AWS SDK for PHP 2](https://github.com/aws/aws-sdk-php/blob/master/src/Aws/Common/Signature/SignatureV2.php).
+  As such, a version of the Apache License Version 2.0 is included with this
+  distribution, and the applicable portion of the AWS SDK for PHP 2 NOTICE file
+  is included.
 
 * API key and API secret generation is handled by Anthony Ferrara's
 [RandomLib](https://github.com/ircmaxell/RandomLib) random string generator.
