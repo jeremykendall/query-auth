@@ -1,6 +1,6 @@
 <?php
 
-namespace QueryAuth;
+namespace QueryAuth\Request;
 
 interface RequestInterface
 {
@@ -31,19 +31,4 @@ interface RequestInterface
      * @return array
      */
     public function getParams();
-
-    /**
-     * Adds parameter to request
-     *
-     * @param mixed $key   Parameter key
-     * @param mixed $value Parameter value
-     */
-    public function addParam($key, $value);
-
-    /**
-     * Replaces request params
-     *
-     * @param array $params Request parameters
-     */
-    public function replaceParams(array $params);
 }

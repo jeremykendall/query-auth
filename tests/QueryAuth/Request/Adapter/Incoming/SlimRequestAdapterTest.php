@@ -1,6 +1,6 @@
 <?php
 
-namespace QueryAuth\Request\Adapter;
+namespace QueryAuth\Request\Adapter\Incoming;
 
 class SlimRequestAdapterTest extends \PHPUnit_Framework_TestCase
 {
@@ -89,17 +89,5 @@ class SlimRequestAdapterTest extends \PHPUnit_Framework_TestCase
         $params = $this->adapter->getParams();
 
         $this->assertEquals($expected, $params);
-    }
-
-    public function testAddParam()
-    {
-        // Not implemented for SlimRequest
-        $this->assertNull($this->adapter->addParam('key', 'value'));
-    }
-
-    public function testReplaceParams()
-    {
-        // Not implemented for SlimRequest
-        $this->assertNull($this->adapter->replaceParams([]));
     }
 }

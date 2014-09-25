@@ -1,8 +1,11 @@
 <?php
 
-namespace QueryAuth;
+namespace QueryAuth\Request;
 
+use Mockery as m;
 use QueryAuth\Credentials\Credentials;
+use QueryAuth\KeyGenerator;
+use QueryAuth\Signature;
 use RandomLib\Factory as RandomFactory;
 
 class RequestSignerTest extends \PHPUnit_Framework_TestCase
@@ -13,9 +16,10 @@ class RequestSignerTest extends \PHPUnit_Framework_TestCase
         $secret = base64_encode(time() . 'secret');
 
         $this->credentials = new Credentials($key, $secret);
-        $this->request = $this->getMockBuilder('QueryAuth\RequestInterface')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->request = m::mock(
+            'QueryAuth\Request\RequestInterface',
+            'QueryAuth\Request\OutgoingRequestInterface'
+        );
         $this->signature = $this->getMockBuilder('QueryAuth\SignatureInterface')
             ->disableOriginalConstructor()
             ->getMock();
@@ -29,6 +33,7 @@ class RequestSignerTest extends \PHPUnit_Framework_TestCase
     protected function tearDown()
     {
         $this->requestSigner = null;
+        m::close();
     }
 
     public function testSignRequest()
@@ -45,14 +50,17 @@ class RequestSignerTest extends \PHPUnit_Framework_TestCase
             ->with($this->request, $this->credentials)
             ->willReturn($signature);
 
-        $this->request->expects($this->exactly(4))
-            ->method('addParam')
-            ->withConsecutive(
-                ['key', $this->credentials->getKey()],
-                ['timestamp', $this->requestSigner->getTimestamp()],
-                ['cnonce', $cnonce],
-                ['signature', $signature]
-            );
+        $this->request->shouldReceive('addParam')
+            ->withArgs(['key', $this->credentials->getKey()]);
+
+        $this->request->shouldReceive('addParam')
+            ->withArgs(['timestamp', $this->requestSigner->getTimestamp()]);
+
+        $this->request->shouldReceive('addParam')
+            ->withArgs(['cnonce', $cnonce]);
+
+        $this->request->shouldReceive('addParam')
+            ->withArgs(['signature', $signature]);
 
         $this->requestSigner->signRequest($this->request, $this->credentials);
     }

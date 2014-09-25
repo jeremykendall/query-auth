@@ -1,11 +1,12 @@
 <?php
 
-namespace QueryAuth\Request\Adapter;
+namespace QueryAuth\Request\Adapter\Incoming;
 
-use QueryAuth\RequestInterface;
+use QueryAuth\Request\IncomingRequestInterface;
+use QueryAuth\Request\RequestInterface;
 use Slim\Http\Request as SlimRequest;
 
-class SlimRequestAdapter implements RequestInterface
+class SlimRequestAdapter implements IncomingRequestInterface, RequestInterface
 {
     /**
      * @var SlimRequest
@@ -56,23 +57,5 @@ class SlimRequestAdapter implements RequestInterface
         }
 
         return $this->request->post();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function addParam($key, $value)
-    {
-        // Not implemented for SlimRequest
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function replaceParams(array $params)
-    {
-        // Not implemented for SlimRequest
-        return null;
     }
 }

@@ -23,12 +23,12 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testFactoryRequestValidator()
     {
-        $this->assertInstanceOf('QueryAuth\RequestValidator', $this->factory->newRequestValidator());
+        $this->assertInstanceOf('QueryAuth\Request\RequestValidator', $this->factory->newRequestValidator());
     }
 
     public function testFactoryRequestSigner()
     {
-        $this->assertInstanceOf('QueryAuth\RequestSigner', $this->factory->newRequestSigner());
+        $this->assertInstanceOf('QueryAuth\Request\RequestSigner', $this->factory->newRequestSigner());
     }
 
     public function testGetSetRandomFactory()

@@ -9,8 +9,8 @@
 
 namespace QueryAuth;
 
-use QueryAuth\RequestSigner;
-use QueryAuth\RequestValidator;
+use QueryAuth\Request\RequestSigner;
+use QueryAuth\Request\RequestValidator;
 use QueryAuth\Signature;
 use RandomLib\Factory as RandomFactory;
 

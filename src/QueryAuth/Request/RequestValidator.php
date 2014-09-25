@@ -7,12 +7,14 @@
  * @link https://github.com/jeremykendall/query-auth
  */
 
-namespace QueryAuth;
+namespace QueryAuth\Request;
 
 use QueryAuth\Credentials\CredentialsInterface;
 use QueryAuth\Exception\DriftExceededException;
 use QueryAuth\Exception\SignatureMissingException;
 use QueryAuth\Exception\TimestampMissingException;
+use QueryAuth\Request\RequestInterface;
+use QueryAuth\SignatureInterface;
 
 /**
  * Validates requests

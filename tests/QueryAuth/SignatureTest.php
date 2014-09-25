@@ -40,7 +40,7 @@ class SignatureTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->request = $this->getMockBuilder('QueryAuth\RequestInterface')
+        $this->request = $this->getMockBuilder('QueryAuth\Request\RequestInterface')
             ->disableOriginalConstructor()
             ->getMock();
 

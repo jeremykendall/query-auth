@@ -1,8 +1,9 @@
 <?php
 
-namespace QueryAuth;
+namespace QueryAuth\Request;
 
 use QueryAuth\Credentials\Credentials;
+use QueryAuth\Signature;
 
 class RequestValidatorTest extends \PHPUnit_Framework_TestCase
 {
@@ -32,7 +33,7 @@ class RequestValidatorTest extends \PHPUnit_Framework_TestCase
         $secret = base64_encode(time() . 'secret');
 
         $this->credentials = new Credentials($key, $secret);
-        $this->request = $this->getMockBuilder('QueryAuth\RequestInterface')
+        $this->request = $this->getMockBuilder('QueryAuth\Request\RequestInterface')
             ->disableOriginalConstructor()
             ->getMock();
         $this->signature = $this->getMockBuilder('QueryAuth\SignatureInterface')

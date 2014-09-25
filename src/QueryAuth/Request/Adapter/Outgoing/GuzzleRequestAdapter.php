@@ -1,11 +1,12 @@
 <?php
 
-namespace QueryAuth\Request\Adapter;
+namespace QueryAuth\Request\Adapter\Outgoing;
 
 use Guzzle\Http\Message\RequestInterface as GuzzleRequestInterface;
-use QueryAuth\RequestInterface;
+use QueryAuth\Request\OutgoingRequestInterface;
+use QueryAuth\Request\RequestInterface;
 
-class GuzzleRequestAdapter implements RequestInterface
+class GuzzleRequestAdapter implements OutgoingRequestInterface, RequestInterface
 {
     /**
      * @var GuzzleRequestInterface

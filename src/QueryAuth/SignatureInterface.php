@@ -10,6 +10,7 @@
 namespace QueryAuth;
 
 use QueryAuth\Credentials\CredentialsInterface;
+use QueryAuth\Request\RequestInterface;
 
 /**
  * Interface for dealing with signature creation

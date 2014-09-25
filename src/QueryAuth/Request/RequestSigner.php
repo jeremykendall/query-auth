@@ -7,9 +7,12 @@
  * @link https://github.com/jeremykendall/query-auth
  */
 
-namespace QueryAuth;
+namespace QueryAuth\Request;
 
 use QueryAuth\Credentials\CredentialsInterface;
+use QueryAuth\KeyGenerator;
+use QueryAuth\Request\OutgoingRequestInterface;
+use QueryAuth\SignatureInterface;
 
 /**
  * Signs requests
@@ -51,7 +54,7 @@ class RequestSigner
      * @return void
      */
     public function signRequest(
-        RequestInterface $request,
+        OutgoingRequestInterface $request,
         CredentialsInterface $credentials
     )
     {

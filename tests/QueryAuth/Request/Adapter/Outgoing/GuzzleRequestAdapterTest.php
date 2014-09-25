@@ -1,6 +1,6 @@
 <?php
 
-namespace QueryAuth\Request\Adapter;
+namespace QueryAuth\Request\Adapter\Outgoing;
 
 use Guzzle\Http\Message\RequestInterface as GuzzleRequestInterface;
 
