@@ -22,6 +22,7 @@
     },
     "require-dev": {
         "guzzle/guzzle": ">=3.7.0,<=3.9.9",
+        "guzzlehttp/guzzle": "~4",
         "mockery/mockery": "0.9.2",
         "phpunit/phpunit": "4.*",
         "slim/slim": "2.*"
