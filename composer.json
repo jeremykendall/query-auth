@@ -31,5 +31,10 @@
         "psr-0": {
             "QueryAuth\\": "src/"
         }
+    },
+    "suggest": {
+        "guzzle/guzzle": "To use the Guzzle v3 outgoing request adapter",
+        "guzzlehttp/guzzle": "To use the Guzzle v4 outgoing request adapter",
+        "slim/slim": "To use the Slim v2 incoming request adapter"
     }
 }
