@@ -49,7 +49,7 @@ class RequestValidator
      * @throws TimestampMissingException If timestamp is missing from request
      * @return boolean
      */
-    public function validateSignature(
+    public function isValid(
         RequestInterface $request,
         CredentialsInterface $credentials
     )

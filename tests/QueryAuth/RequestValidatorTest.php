@@ -47,7 +47,7 @@ class RequestValidatorTest extends \PHPUnit_Framework_TestCase
         $this->requestValidator = null;
     }
 
-    public function testValidateSignature()
+    public function testIsValid()
     {
         $this->request->expects($this->once())
             ->method('getParams')
@@ -61,14 +61,14 @@ class RequestValidatorTest extends \PHPUnit_Framework_TestCase
             ->with($this->request, $this->credentials)
             ->willReturn(12345);
 
-        $result = $this->requestValidator->validateSignature(
+        $result = $this->requestValidator->isValid(
             $this->request, $this->credentials
         );
 
         $this->assertTrue($result);
     }
 
-    public function testValidateSignatureReturnsFalseForInvalidSignature()
+    public function testIsValidReturnsFalseForInvalidSignature()
     {
         $this->request->expects($this->once())
             ->method('getParams')
@@ -82,7 +82,7 @@ class RequestValidatorTest extends \PHPUnit_Framework_TestCase
             ->with($this->request, $this->credentials)
             ->willReturn(54321);
 
-        $result = $this->requestValidator->validateSignature(
+        $result = $this->requestValidator->isValid(
             $this->request, $this->credentials
         );
 
@@ -111,7 +111,7 @@ class RequestValidatorTest extends \PHPUnit_Framework_TestCase
         $this->signature->expects($this->never())
             ->method('createSignature');
 
-        $this->requestValidator->validateSignature(
+        $this->requestValidator->isValid(
             $this->request, $this->credentials
         );
     }
@@ -138,7 +138,7 @@ class RequestValidatorTest extends \PHPUnit_Framework_TestCase
         $this->signature->expects($this->never())
             ->method('createSignature');
 
-        $this->requestValidator->validateSignature(
+        $this->requestValidator->isValid(
             $this->request, $this->credentials
         );
     }
@@ -156,7 +156,7 @@ class RequestValidatorTest extends \PHPUnit_Framework_TestCase
                 'timestamp' => (int) gmdate('U'),
             ]);
 
-        $this->requestValidator->validateSignature(
+        $this->requestValidator->isValid(
             $this->request, $this->credentials
         );
     }
@@ -174,7 +174,7 @@ class RequestValidatorTest extends \PHPUnit_Framework_TestCase
                 'signature' => 12345,
             ]);
 
-        $this->requestValidator->validateSignature(
+        $this->requestValidator->isValid(
             $this->request, $this->credentials
         );
     }
