@@ -1,6 +1,6 @@
 <?php
 
-namespace QueryAuth\Tests;
+namespace QueryAuth;
 
 use QueryAuth\Factory;
 use RandomLib\Factory as RandomFactory;
@@ -21,14 +21,14 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
         parent::tearDown();
     }
 
-    public function testFactoryServer()
+    public function testFactoryRequestValidator()
     {
-        $this->assertInstanceOf('QueryAuth\Server', $this->factory->newServer());
+        $this->assertInstanceOf('QueryAuth\Request\RequestValidator', $this->factory->newRequestValidator());
     }
 
-    public function testFactoryClient()
+    public function testFactoryRequestSigner()
     {
-        $this->assertInstanceOf('QueryAuth\Client', $this->factory->newClient());
+        $this->assertInstanceOf('QueryAuth\Request\RequestSigner', $this->factory->newRequestSigner());
     }
 
     public function testGetSetRandomFactory()

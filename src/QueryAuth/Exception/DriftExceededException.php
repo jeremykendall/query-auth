@@ -10,8 +10,8 @@
 namespace QueryAuth\Exception;
 
 /**
- * Exception thrown when Signature is missing
+ * Thrown when request timestamp is beyond allowable clock drift
  */
-class SignatureMissingException extends \BadMethodCallException implements QueryAuthException
+class DriftExceededException extends \OutOfBoundsException implements QueryAuthException
 {
 }

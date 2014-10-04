@@ -2,12 +2,12 @@
 <phpunit bootstrap="tests/bootstrap.php" colors="true">
 
     <testsuite name="all-tests">
-        <directory>tests/QueryAuth/Tests</directory>
+        <directory>tests/QueryAuth</directory>
     </testsuite>
 
     <filter>
         <whitelist>
-            <directory suffix=".php">./src</directory>
+            <directory suffix=".php">./src/QueryAuth</directory>
         </whitelist>
     </filter>
 

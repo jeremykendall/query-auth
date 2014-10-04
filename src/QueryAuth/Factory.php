@@ -2,17 +2,16 @@
 /**
  * Query Auth: Signature generation and validation for REST API query authentication
  *
- * @copyright 2013 Jeremy Kendall
+ * @copyright 2013-2014 Jeremy Kendall
  * @license https://github.com/jeremykendall/query-auth/blob/master/LICENSE MIT
  * @link https://github.com/jeremykendall/query-auth
  */
 
 namespace QueryAuth;
 
-use QueryAuth\Client;
-use QueryAuth\ParameterCollection;
-use QueryAuth\Server;
-use QueryAuth\Signer;
+use QueryAuth\Request\RequestSigner;
+use QueryAuth\Request\RequestValidator;
+use QueryAuth\Signature;
 use RandomLib\Factory as RandomFactory;
 
 /**
@@ -28,21 +27,21 @@ class Factory
     /**
      * Creates a client instance
      *
-     * @return Client Client instance
+     * @return RequestSigner RequestSigner instance
      */
-    public function newClient()
+    public function newRequestSigner()
     {
-        return new Client($this->newSigner(), $this->newKeyGenerator());
+        return new RequestSigner($this->newSignature(), $this->newKeyGenerator());
     }
 
     /**
-     * Creates a server instance
+     * Creates a RequestValidator
      *
-     * @return Server Server instance
+     * @return RequestValidator RequestValidator instance
      */
-    public function newServer()
+    public function newRequestValidator()
     {
-        return new Server($this->newSigner());
+        return new RequestValidator($this->newSignature());
     }
 
     /**
@@ -56,13 +55,13 @@ class Factory
     }
 
     /**
-     * Creates a signer for either server or client
+     * Creates a Signature instance
      *
-     * @return Signer Signer instance
+     * @return Signature Signature instance
      */
-    protected function newSigner()
+    protected function newSignature()
     {
-        return new Signer(new ParameterCollection());
+        return new Signature();
     }
 
     /**
