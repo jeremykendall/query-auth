@@ -1,4 +1,11 @@
 <?php
+/**
+ * Query Auth: Signature generation and validation for REST API query authentication
+ *
+ * @copyright 2013-2014 Jeremy Kendall
+ * @license https://github.com/jeremykendall/query-auth/blob/master/LICENSE MIT
+ * @link https://github.com/jeremykendall/query-auth
+ */
 
 namespace QueryAuth\Request\Adapter\Incoming;
 
@@ -6,10 +13,13 @@ use QueryAuth\Request\IncomingRequestInterface;
 use QueryAuth\Request\RequestInterface;
 use Slim\Http\Request as SlimRequest;
 
+/**
+ * Incoming request adapter for Slim v2
+ */
 class SlimRequestAdapter implements IncomingRequestInterface, RequestInterface
 {
     /**
-     * @var SlimRequest
+     * @var SlimRequest Slim request
      */
     protected $request;
 
