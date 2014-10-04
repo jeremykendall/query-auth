@@ -13,7 +13,6 @@ use QueryAuth\Credentials\CredentialsInterface;
 use QueryAuth\Exception\DriftExceededException;
 use QueryAuth\Exception\SignatureMissingException;
 use QueryAuth\Exception\TimestampMissingException;
-use QueryAuth\Request\RequestInterface;
 use QueryAuth\SignatureInterface;
 
 /**
@@ -68,8 +67,7 @@ class RequestValidator
     /**
      * Is $timestamp greater than or less than $drift seconds?
      *
-     * @param  int     $now       GMT server timestamp
-     * @param  int     $timestamp GMT timestamp from request
+     * @param  array   $params Request params
      * @return boolean
      */
     protected function isDriftExceeded(array $params)
@@ -86,6 +84,12 @@ class RequestValidator
         }
     }
 
+    /**
+     * Throws exception if signature is not present in request
+     *
+     * @param  array                     $params Request params
+     * @throws SignatureMissingException
+     */
     protected function isSignaturePresent(array $params)
     {
         if (!isset($params['signature'])) {
@@ -93,6 +97,12 @@ class RequestValidator
         }
     }
 
+    /**
+     * Throws exception if timestamp is not present in request
+     *
+     * @param  array                     $params Request params
+     * @throws TimestampMissingException
+     */
     protected function isTimestampPresent(array $params)
     {
         if (!isset($params['timestamp'])) {

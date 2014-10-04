@@ -100,7 +100,7 @@ class RequestSigner
     /**
      * Sets instance of KeyGenerator
      *
-     * @param KeyGenerator Instance of KeyGenerator
+     * @param KeyGenerator $keyGenerator Instance of KeyGenerator
      */
     public function setKeyGenerator(KeyGenerator $keyGenerator)
     {

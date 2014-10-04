@@ -37,7 +37,7 @@ class Signature implements SignatureInterface
     /**
      * Normalizes request parameters
      *
-     * @params array $params Request parameters
+     * @param  array  $params Request parameters
      * @return string Normalized, rawurlencoded parameter string
      */
     protected function normalizeParameters(array $params)
@@ -52,6 +52,12 @@ class Signature implements SignatureInterface
         return http_build_query($params, null, '&', PHP_QUERY_RFC3986);
     }
 
+    /**
+     * Ensures that path is absolute
+     *
+     * @param  string $path Request path
+     * @return string Absolute request path
+     */
     protected function getAbsolutePath($path)
     {
         return '/' . ltrim($path, '/');
