@@ -19,7 +19,7 @@ use QueryAuth\Request\RequestInterface;
 class GuzzleRequestAdapter implements OutgoingRequestInterface, RequestInterface
 {
     /**
-     * @var GuzzleRequestInterface
+     * @var GuzzleRequestInterface Guzzle request interface
      */
     protected $request;
 
@@ -70,26 +70,30 @@ class GuzzleRequestAdapter implements OutgoingRequestInterface, RequestInterface
     }
 
     /**
+     * Adds parameter to request
+     *
      * {@inheritDoc}
      */
     public function addParam($key, $value)
     {
         if ($this->getMethod() == 'POST') {
-            $this->request->setPostField($key, $value);
-        } else {
-            $this->request->getQuery()->set($key, $value);
+            return $this->request->setPostField($key, $value);
         }
+
+        $this->request->getQuery()->set($key, $value);
     }
 
     /**
+     * Replaces request params
+     *
      * {@inheritDoc}
      */
     public function replaceParams(array $params)
     {
         if ($this->getMethod() === 'POST') {
-            $this->request->getPostFields()->replace($params);
-        } else {
-            $this->request->getQuery()->replace($params);
+            return $this->request->getPostFields()->replace($params);
         }
+
+        $this->request->getQuery()->replace($params);
     }
 }

@@ -14,12 +14,12 @@ use QueryAuth\Request\OutgoingRequestInterface;
 use QueryAuth\Request\RequestInterface;
 
 /**
- * Outgoing Request Adapter for Guzzle v4
+ * Outgoing request adapter for Guzzle v4
  */
 class GuzzleHttpRequestAdapter implements OutgoingRequestInterface, RequestInterface
 {
     /**
-     * @var GuzzleHttpRequestInterface
+     * @var GuzzleHttpRequestInterface Guzzle request interface
      */
     protected $request;
 
@@ -58,6 +58,8 @@ class GuzzleHttpRequestAdapter implements OutgoingRequestInterface, RequestInter
     }
 
     /**
+     * Gets params
+     *
      * {@inheritDoc}
      */
     public function getParams()
@@ -70,26 +72,30 @@ class GuzzleHttpRequestAdapter implements OutgoingRequestInterface, RequestInter
     }
 
     /**
+     * Adds parameter to request
+     *
      * {@inheritDoc}
      */
     public function addParam($key, $value)
     {
         if ($this->getMethod() == 'POST') {
-            $this->request->getBody()->setField($key, $value);
-        } else {
-            $this->request->getQuery()->set($key, $value);
+            return $this->request->getBody()->setField($key, $value);
         }
+
+        $this->request->getQuery()->set($key, $value);
     }
 
     /**
+     * Replaces request params
+     *
      * {@inheritDoc}
      */
     public function replaceParams(array $params)
     {
         if ($this->getMethod() === 'POST') {
-            $this->request->getBody()->replaceFields($params);
-        } else {
-            $this->request->getQuery()->replace($params);
+            return $this->request->getBody()->replaceFields($params);
         }
+
+        $this->request->getQuery()->replace($params);
     }
 }
