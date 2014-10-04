@@ -12,6 +12,6 @@ namespace QueryAuth\Exception;
 /**
  * Exception thrown when Signature is missing
  */
-class SignatureMissingException extends \Exception implements QueryAuthException
+class SignatureMissingException extends \BadMethodCallException implements QueryAuthException
 {
 }

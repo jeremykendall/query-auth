@@ -12,6 +12,6 @@ namespace QueryAuth\Exception;
 /**
  * Exception thrown when timestamp param is missing from request
  */
-class TimestampMissingException extends \Exception implements QueryAuthException
+class TimestampMissingException extends \BadMethodCallException implements QueryAuthException
 {
 }
