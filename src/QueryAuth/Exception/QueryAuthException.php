@@ -9,4 +9,7 @@
 
 namespace QueryAuth\Exception;
 
+/**
+ * Interface for all Query Auth Exception classes
+ */
 interface QueryAuthException {}

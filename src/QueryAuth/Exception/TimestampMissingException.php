@@ -10,8 +10,8 @@
 namespace QueryAuth\Exception;
 
 /**
- * Exception thrown when Signature is missing
+ * Exception thrown when timestamp param is missing from request
  */
-class SignatureMissingException extends \BadMethodCallException implements QueryAuthException
+class TimestampMissingException extends \BadMethodCallException implements QueryAuthException
 {
 }

@@ -24,7 +24,7 @@ class KeyGenerator
     /**
      * Public constructor
      *
-     * @var Generator $generator RandomLib factory
+     * @param Generator $generator RandomLib generator
      */
     public function __construct(Generator $generator)
     {

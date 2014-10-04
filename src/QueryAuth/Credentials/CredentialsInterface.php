@@ -10,7 +10,7 @@
 namespace QueryAuth\Credentials;
 
 /**
- * Defines methods that must be present on a Credentials object
+ * Stores key and secret
  */
 interface CredentialsInterface
 {

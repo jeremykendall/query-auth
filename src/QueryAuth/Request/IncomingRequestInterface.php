@@ -7,11 +7,13 @@
  * @link https://github.com/jeremykendall/query-auth
  */
 
-namespace QueryAuth\Exception;
+namespace QueryAuth\Request;
 
 /**
- * Thrown when request timestamp is beyond allowable clock drift
+ * Interface for incoming requests.
+ *
+ * Used to facilitate request validation and differentiate from outgoing requests.
  */
-class TimeOutOfBoundsException extends \OutOfBoundsException implements QueryAuthException
+interface IncomingRequestInterface
 {
 }
