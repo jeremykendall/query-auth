@@ -90,4 +90,22 @@ class SlimRequestAdapterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expected, $params);
     }
+
+    /**
+     * @group 18
+     */
+    public function testGetQueryStringParametersDeleteRequest()
+    {
+        $expected = ['one' => 'two'];
+
+        $this->adaptee->method('getMethod')
+            ->willReturn('DELETE');
+
+        $this->adaptee->method('params')
+            ->willReturn($expected);
+
+        $params = $this->adapter->getParams();
+
+        $this->assertEquals($expected, $params);
+    }
 }
