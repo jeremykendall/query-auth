@@ -66,6 +66,10 @@ class SlimRequestAdapter implements IncomingRequestInterface, RequestInterface
             return $this->request->get();
         }
 
+        if ($this->getMethod() === SlimRequest::METHOD_DELETE) {
+            return $this->request->params();
+        }
+
         return $this->request->post();
     }
 }
