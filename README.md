@@ -16,12 +16,12 @@ tasks for you.
 
 ## Sample Implementation
 
-A [sample implementation of the Query Auth library](https://github.com/jeremykendall/query-auth-impl) 
+A [sample implementation of the Query Auth library](https://github.com/jeremykendall/query-auth-impl)
 is available in order to better demonstrate how one might employ the library.
 
 ## Usage
 
-There are three components to this library: 
+There are three components to this library:
 
 * Request signing
 * Request validation
@@ -31,7 +31,7 @@ Request signing and validation are made possible by the use of request adapters.
 
 ### Request Adapters
 
-Query Auth request adapters wrap outgoing and incoming requests and adapt them to the 
+Query Auth request adapters wrap outgoing and incoming requests and adapt them to the
 request interface that Query Auth expects.
 
 #### Outgoing
@@ -163,6 +163,14 @@ $secret = $keyGenerator->generateSecret();
 
 Both key and secret are generated using Anthony Ferrara's [RandomLib](https://github.com/ircmaxell/RandomLib)
 random string generator.
+
+## Versions Less Than 3.0+ Deprecated, Not Obsolete
+
+While I'd advise upgrading to v3 as soon as possible, a happy side effect of refactoring
+the API without changing the signature creation and validation logic is that
+Query Auth 3.0+ is compatible with prior versions of Query Auth. This means that you'll
+be able to upgrade Query Auth on the server-side (validation) without needing
+to immediately upgrade all client-side (creation) applications. BONUS!
 
 ## Installation
 

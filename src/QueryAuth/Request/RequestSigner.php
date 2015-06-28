@@ -117,7 +117,7 @@ class RequestSigner
     public function getTimestamp()
     {
         if ($this->timestamp === null) {
-            $this->timestamp = (int) gmdate('U');
+            return (int) gmdate('U');
         }
 
         return $this->timestamp;

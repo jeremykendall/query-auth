@@ -92,4 +92,31 @@ class RequestSignerTest extends \PHPUnit_Framework_TestCase
         $this->requestSigner->setTimestamp($new);
         $this->assertEquals($new, $this->requestSigner->getTimestamp());
     }
+
+    /**
+     * @group 20
+     *
+     * Issue #20 RequestSigner::getTimestamp() will return the wrong timestamp value in some situations
+     * @see https://github.com/jeremykendall/query-auth/issues/20
+     */
+    public function testGetTimestampReturnsCorrectTimestampOverMultipleCalls()
+    {
+        $gmdateTimestamp = (int) gmdate('U');
+        $requestSignerTimestamp1 = $this->requestSigner->getTimestamp();
+
+        $this->assertEquals(
+            $gmdateTimestamp, 
+            $requestSignerTimestamp1, 
+            'Timestamps differ by more than 1 second', 
+            $delta = 1
+        );
+
+        // Sleep for two seconds to ensure timestamp changes
+        sleep(2);
+
+        $requestSignerTimestamp2 = $this->requestSigner->getTimestamp();
+        // Because $requestSignerTimestamp2 should be > $requestSignerTimestamp1
+        // by at least 1 second
+        $this->assertGreaterThan($requestSignerTimestamp1, $requestSignerTimestamp2);
+    }
 }
