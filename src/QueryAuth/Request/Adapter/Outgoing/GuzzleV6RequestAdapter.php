@@ -10,13 +10,14 @@
 namespace QueryAuth\Request\Adapter\Outgoing;
 
 use Psr\Http\Message\RequestInterface as GuzzleHttpRequestInterface;
+use QueryAuth\Request\OutgoingImmutableRequestInterface;
 use QueryAuth\Request\OutgoingRequestInterface;
 use QueryAuth\Request\RequestInterface;
 
 /**
  * Outgoing request adapter for Guzzle v6
  */
-class GuzzleV6RequestAdapter implements OutgoingRequestInterface, RequestInterface
+class GuzzleV6RequestAdapter implements OutgoingRequestInterface, OutgoingImmutableRequestInterface, RequestInterface
 {
     /**
      * @var GuzzleHttpRequestInterface Guzzle request interface

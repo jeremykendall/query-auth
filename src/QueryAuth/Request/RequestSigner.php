@@ -66,7 +66,9 @@ class RequestSigner
 
         $request->addParam('signature', $signature);
 
-        return $request->getRequest();
+        if ($request instanceof OutgoingImmutableRequestInterface) {
+            return $request->getRequest();
+        }
     }
 
     /**

@@ -14,20 +14,10 @@ namespace QueryAuth\Request;
  *
  * Used to facilitate request signing and differentiate from incoming requests.
  */
-interface OutgoingRequestInterface
+interface OutgoingImmutableRequestInterface
 {
     /**
-     * Adds parameter to request
-     *
-     * @param mixed $key   Parameter key
-     * @param mixed $value Parameter value
+     * @return mixed
      */
-    public function addParam($key, $value);
-
-    /**
-     * Replaces request params
-     *
-     * @param array $params Request parameters
-     */
-    public function replaceParams(array $params);
+    public function getRequest();
 }
