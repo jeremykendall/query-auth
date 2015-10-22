@@ -30,4 +30,9 @@ interface OutgoingRequestInterface
      * @param array $params Request parameters
      */
     public function replaceParams(array $params);
+
+    /**
+     * @return mixed
+     */
+    public function getRequest();
 }

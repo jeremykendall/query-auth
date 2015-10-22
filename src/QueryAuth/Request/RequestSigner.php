@@ -51,7 +51,7 @@ class RequestSigner
      *
      * @param  RequestInterface     $request     Request
      * @param  CredentialsInterface $credentials Credentials
-     * @return void
+     * @return mixed
      */
     public function signRequest(
         OutgoingRequestInterface $request,
@@ -65,6 +65,8 @@ class RequestSigner
         $signature = $this->signature->createSignature($request, $credentials);
 
         $request->addParam('signature', $signature);
+
+        return $request->getRequest();
     }
 
     /**
