@@ -13,6 +13,7 @@ use QueryAuth\Credentials\CredentialsInterface;
 use QueryAuth\Exception\DriftExceededException;
 use QueryAuth\Exception\SignatureMissingException;
 use QueryAuth\Exception\TimestampMissingException;
+use QueryAuth\Signature;
 use QueryAuth\SignatureInterface;
 
 /**
