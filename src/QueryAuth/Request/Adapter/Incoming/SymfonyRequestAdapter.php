@@ -7,7 +7,7 @@
  * @link https://github.com/jeremykendall/query-auth
  */
 
-namespace AppBundle\Helper;
+namespace QueryAuth\Request\Adapter\Incoming;
 
 use QueryAuth\Request\IncomingRequestInterface;
 use QueryAuth\Request\RequestInterface;
