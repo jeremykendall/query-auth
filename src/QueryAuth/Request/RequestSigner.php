@@ -12,6 +12,7 @@ namespace QueryAuth\Request;
 use QueryAuth\Credentials\CredentialsInterface;
 use QueryAuth\KeyGenerator;
 use QueryAuth\Request\OutgoingRequestInterface;
+use QueryAuth\Signature;
 use QueryAuth\SignatureInterface;
 
 /**
