@@ -4,8 +4,9 @@ namespace QueryAuth;
 
 use QueryAuth\Factory;
 use RandomLib\Factory as RandomFactory;
+use PHPUnit\Framework\TestCase;
 
-class FactoryTest extends \PHPUnit_Framework_TestCase
+class FactoryTest extends TestCase
 {
     private $factory;
 

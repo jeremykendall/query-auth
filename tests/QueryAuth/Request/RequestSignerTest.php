@@ -7,8 +7,9 @@ use QueryAuth\Credentials\Credentials;
 use QueryAuth\KeyGenerator;
 use QueryAuth\Signature;
 use RandomLib\Factory as RandomFactory;
+use PHPUnit\Framework\TestCase;
 
-class RequestSignerTest extends \PHPUnit_Framework_TestCase
+class RequestSignerTest extends TestCase
 {
     protected function setUp()
     {

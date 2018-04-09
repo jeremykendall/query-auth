@@ -2,7 +2,9 @@
 
 namespace QueryAuth\Exception;
 
-class QueryAuthExceptionTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class QueryAuthExceptionTest extends TestCase
 {
     public function testDriftExceededException()
     {

@@ -2,7 +2,9 @@
 
 namespace QueryAuth\Credentials;
 
-class CredentialsTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class CredentialsTest extends TestCase
 {
     public function testCredentials()
     {

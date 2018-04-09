@@ -2,7 +2,9 @@
 
 namespace QueryAuth\Request\Adapter\Outgoing;
 
-class GuzzleHttpRequestAdapterTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class GuzzleHttpRequestAdapterTest extends TestCase
 {
     protected $adapter;
     protected $adaptee;
