@@ -2,7 +2,9 @@
 
 namespace QueryAuth;
 
-class SignatureTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class SignatureTest extends TestCase
 {
     /**
      * @var Signature

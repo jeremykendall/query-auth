@@ -2,7 +2,9 @@
 
 namespace QueryAuth;
 
-class KeyGeneratorTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class KeyGeneratorTest extends TestCase
 {
     /**
      * @var KeyGenerator

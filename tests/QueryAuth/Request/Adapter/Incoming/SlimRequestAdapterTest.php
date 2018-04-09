@@ -2,7 +2,9 @@
 
 namespace QueryAuth\Request\Adapter\Incoming;
 
-class SlimRequestAdapterTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class SlimRequestAdapterTest extends TestCase
 {
     protected $adapter;
     protected $adaptee;

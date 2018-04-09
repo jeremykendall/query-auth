@@ -4,8 +4,9 @@ namespace QueryAuth\Request;
 
 use QueryAuth\Credentials\Credentials;
 use QueryAuth\Signature;
+use PHPUnit\Framework\TestCase;
 
-class RequestValidatorTest extends \PHPUnit_Framework_TestCase
+class RequestValidatorTest extends TestCase
 {
     /**
      * @var RequestValidator

@@ -3,8 +3,9 @@
 namespace QueryAuth\Request\Adapter\Outgoing;
 
 use Guzzle\Http\Message\RequestInterface as GuzzleRequestInterface;
+use PHPUnit\Framework\TestCase;
 
-class GuzzleRequestAdapterTest extends \PHPUnit_Framework_TestCase
+class GuzzleRequestAdapterTest extends TestCase
 {
     protected $adapter;
     protected $adaptee;
